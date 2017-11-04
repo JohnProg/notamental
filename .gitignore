@@ -23,6 +23,8 @@ DerivedData
 project.xcworkspace
 
 # Android/IntelliJ
+./android/app/google-services.json
+
 #
 build/
 .idea

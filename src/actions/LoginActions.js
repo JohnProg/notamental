@@ -52,8 +52,8 @@ export const userLoggout = (navigation) => {
     dispatch({ type: LOADING_USER });
     firebase.auth().signOut()
       .then(() => {
-        dispatch({ type: USER_LOGGOUT });
         navigation.navigate('login');
+        dispatch({ type: USER_LOGGOUT });
       });
   };
 };

@@ -23,61 +23,60 @@ class Listener extends Component {
       partialResults: [],
     };
     Voice.onSpeechStart = this.onSpeechStart.bind(this);
-    Voice.onSpeechRecognized = this.onSpeechRecognized.bind(this);
+    // Voice.onSpeechRecognized = this.onSpeechRecognized.bind(this);
     Voice.onSpeechEnd = this.onSpeechEnd.bind(this);
     Voice.onSpeechError = this.onSpeechError.bind(this);
-    Voice.onSpeechResults = this.onSpeechResults.bind(this);
+    // Voice.onSpeechResults = this.onSpeechResults.bind(this);
     Voice.onSpeechPartialResults = this.onSpeechPartialResults.bind(this);
-    Voice.onSpeechVolumeChanged = this.onSpeechVolumeChanged.bind(this);
+    // Voice.onSpeechVolumeChanged = this.onSpeechVolumeChanged.bind(this);
   }
 
   componentWillUnmount() {
     Voice.destroy().then(Voice.removeAllListeners);
   }
 
-  onSpeechStart(e) {
+  onSpeechStart() {
     this.setState({
       started: '√',
     });
   }
 
-  onSpeechRecognized(e) {
-    this.setState({
-      recognized: '√',
-    });
-  }
+  // onSpeechRecognized(e) {
+  //   this.setState({
+  //     recognized: '√',
+  //   });
+  // }
 
-  onSpeechEnd(e) {
+  onSpeechEnd() {
     this.setState({
       end: '√',
     });
   }
 
   onSpeechError(e) {
+    this.props.notaChanged({ prop: 'error', value: e.error.message });
     this.setState({
       error: JSON.stringify(e.error),
     });
   }
 
-  onSpeechResults(e) {
-    this.setState({
-      results: e.value,
-    });
-  }
+  // onSpeechResults(e) {
+  //   this.setState({
+  //     results: e.value,
+  //   });
+  // }
 
   onSpeechPartialResults(e) {
-    this.setState({
-      partialResults: e.value,
-    });
+    e.value.map(value => this.props.notaChanged({ prop: 'text', value }));
   }
 
-  onSpeechVolumeChanged(e) {
-    this.setState({
-      pitch: e.value,
-    });
-  }
+  // onSpeechVolumeChanged(e) {
+  //   this.setState({
+  //     pitch: e.value,
+  //   });
+  // }
 
-  async _startRecognizing(e) {
+  async _startRecognizing() {
     this.setState({
       recognized: '',
       pitch: '',
@@ -130,41 +129,6 @@ class Listener extends Component {
   render() {
     return (
       <View>
-        <Text
-          style={styles.stat}
-        >
-          {`Error: ${this.state.error}`}
-        </Text>
-        <Text
-          style={styles.stat}>
-          Results
-        </Text>
-        {this.state.results.map((result, index) => {
-          return (
-            <Text
-              key={`result-${index}`}
-              style={styles.stat}>
-              {result}
-            </Text>
-          )
-        })}
-        <Text
-          style={styles.stat}>
-          Partial Results
-        </Text>
-        {this.state.partialResults.map((result, index) => {
-          return (
-            <Text
-              key={`partial-result-${index}`}
-              style={styles.stat}>
-              {result}
-            </Text> 
-          )
-        })}
-        <Text
-          style={styles.stat}>
-          {`End: ${this.state.end}`}
-        </Text>
         <TouchableHighlight onPress={this._startRecognizing.bind(this)}>
           <Image
             style={styles.button}

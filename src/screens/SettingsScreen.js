@@ -39,7 +39,7 @@ class SettingsScreen extends Component {
           title='EMAIL'
         >
           <Text style={{ marginBottom: 10 }} >
-            {this.props.user.email}
+            {this.props.user.email || ''}
           </Text>
         </Card>
         {this.renderButton()}
@@ -50,6 +50,9 @@ class SettingsScreen extends Component {
 
 const mapStateToProps = (state) => {
   const { loading, user } = state.login;
+  if (user === null) {
+    return { loading };
+  }
   return { loading, user };
 };
 

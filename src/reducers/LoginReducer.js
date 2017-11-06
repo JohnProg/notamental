@@ -31,7 +31,7 @@ export default (state = INITIAL_STATE, action) => {
     case USER_ALREADY_LOGGED:
       return { ...state, user: action.payload };
     case USER_LOGGOUT:
-      return INITIAL_STATE;
+      return { ...state, loading: false, err: '' };
     default:
       return state;
   }

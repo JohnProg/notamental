@@ -57,3 +57,5 @@ buck-out/
 
 # API Keys
 config.js
+my-release-key.keystore
+android/app/my-release-key.keystore

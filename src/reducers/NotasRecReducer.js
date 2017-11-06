@@ -1,11 +1,13 @@
 import {
   NOTA_CHANGED,
-  CREATE_NOTA
+  CREATE_NOTA,
+  VOICE_START
 } from '../actions/types';
 
 const INITIAL_STATE = {
   text: '',
   title: '',
+  error: ''
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -15,6 +17,8 @@ export default (state = INITIAL_STATE, action) => {
     }
     case CREATE_NOTA:
       return INITIAL_STATE;
+    case VOICE_START:
+      return state;
     default:
       return state;
   }

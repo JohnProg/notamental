@@ -6,7 +6,8 @@ import { List, ListItem, Avatar } from 'react-native-elements';
 import ActionButton from 'react-native-action-button';
 import firebase from 'react-native-firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { fetchNotas, notaChanged } from '../actions';
+import { fetchNotas, notaChanged, deleteNota } from '../actions';
+import ModalOptions from '../components/ModalOptions';
 
 class ListScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -25,6 +26,10 @@ class ListScreen extends Component {
       paddingRight: 5
     }
   })
+  state = {
+    isModalVisible: false,
+    selectedUid: ''
+  }
 
   componentWillMount() {
     firebase.auth().onAuthStateChanged(user => {
@@ -35,14 +40,25 @@ class ListScreen extends Component {
   }
 
   editNota = (nota) => {
-    this.props.notaChanged({ prop: 'title', value: nota.title });
-    this.props.notaChanged({ prop: 'text', value: nota.text });
-    this.props.navigation.navigate('rec');
+    this.props.navigation.navigate('MainNavigator', {}, {
+        type: 'Navigation/NAVIGATE',
+        routeName: 'rec',
+        params: { nota }
+    });
   }
 
   keyExtractor(nota) {
     return nota.uid;
   }
+
+  showModal = (selectedUid) => this.setState({ isModalVisible: true, selectedUid })
+
+  hideModal = () => this.setState({ isModalVisible: false })
+
+  handleDelete = () => {
+    this.props.deleteNota({ uid: this.state.selectedUid, navigation: this.props.navigation });
+    this.hideModal();
+  };
 
   renderRow = (rowData) => {
     const nota = rowData.item;
@@ -66,6 +82,7 @@ class ListScreen extends Component {
         rightTitle={nota.timestamp}
         // label={'prueba'}
         onPress={() => this.editNota(nota)}
+        onLongPress={() => this.showModal(nota.uid)}
       />
     );
   }
@@ -85,6 +102,10 @@ class ListScreen extends Component {
           buttonColor="rgba(231,76,60,1)"
           onPress={() => this.props.navigation.navigate('rec')}
         />
+        <ModalOptions
+          isVisible={this.state.isModalVisible}
+          deleteNota={this.handleDelete.bind(this)}
+        />
       </View>
     );
   }
@@ -97,4 +118,4 @@ const mapStateToProps = state => {
   return { notas };
 };
 
-export default connect(mapStateToProps, { fetchNotas, notaChanged })(ListScreen);
+export default connect(mapStateToProps, { fetchNotas, notaChanged, deleteNota })(ListScreen);

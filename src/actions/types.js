@@ -9,6 +9,11 @@ export const USER_LOGGOUT = 'user_loggout';
 
 export const NOTA_CHANGED = 'nota_changed';
 export const CREATE_NOTA = 'create_nota';
+export const SAVE_NOTA = 'save_nota';
+export const DELETE_NOTA = 'delete_nota';
 export const FETCH_NOTAS = 'fetch_notas';
+export const RESET_NOTA = 'reset_nota';
 
 export const VOICE_START = 'voice_start';
+export const VOICE_INIT = 'voice_init';
+export const VOICE_END = 'voice_end';

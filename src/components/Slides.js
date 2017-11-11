@@ -1,10 +1,27 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
+import Swiper from 'react-native-swiper';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 class Slides extends Component {
+
+  constructor(props) {
+   super(props);
+   this.state = {
+      visibleSwiper: false
+   };
+  }
+
+  componentDidMount() {
+     setTimeout(() => {
+        this.setState({
+          visibleSwiper: true
+        });
+     }, 100);
+  }
+
   renderLastSlide(index) {
     if (index === this.props.data.length - 1) {
       return (
@@ -33,23 +50,41 @@ class Slides extends Component {
     });
   }
 
+  renderSwiper() {
+    if (this.state.visibleSwiper) {
+      return (
+        <Swiper
+          style={styles.wrapper}
+          showsButtons
+          removeClippedSubviews={false}
+        >
+          {this.renderSlides()}
+        </Swiper>
+      );
+    } return <View />;
+  }
+
   render() {
-    return (
-      <ScrollView
-        horizontal
-        // style={{ flex: 1 }}
-        pagingEnabled
-      >
-        {this.renderSlides()}
-      </ScrollView>
-    );
+    if (this.state.visibleSwiper) {
+      return (
+        <Swiper
+          style={styles.wrapper}
+          showsButtons
+          removeClippedSubviews={false}
+        >
+          {this.renderSlides()}
+        </Swiper>
+      );
+    } return <View />;
   }
 }
 
 const styles = {
+  wrapper: {
+  },
   slideStyle: {
     width: SCREEN_WIDTH,
-    //flex: 1,
+    flex: 1,
     //flexDirection: 'column',
     justifyContent: 'center',
     //alignItems: 'center',

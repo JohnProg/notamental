@@ -1,31 +1,115 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { FormInput, FormValidationMessage, Button } from 'react-native-elements';
+import _ from 'lodash';
+import { FormInput, FormValidationMessage, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
-import { notaChanged, createNota, initRec, startRecognizing } from '../actions';
-import Listener from '../components/Listener';
+import { PulseIndicator } from 'react-native-indicators';
+import {
+  resetNota,
+  notaChanged,
+  saveNota,
+  deleteNota,
+  initRec,
+  startRecognizing,
+  recordEnd
+} from '../actions';
 
 class RecScreen extends Component {
-  static navigationOptions = () => ({
-    title: 'Guardando Nota',
+
+  static navigationOptions = ({ navigation }) => ({
+    title: 'Nota',
     tabBarVisible: false,
+    headerRight: (
+      <View style={{ flexDirection: 'row' }}>
+        <Icon
+          title="Borrar"
+          size={30}
+          onPress={() => navigation.state.params.deletePress()}
+          backgroundColor="rgba(0,0,0,0)"
+          color="rgba(0,122,255,1)"
+          type='entypo'
+          name='trash'
+          containerStyle={{ marginRight: 10 }}
+        />
+        <Icon
+          title="Guardar"
+          size={30}
+          onPress={() => navigation.state.params.savePress()}
+          backgroundColor="rgba(0,0,0,0)"
+          color="rgba(0,122,255,1)"
+          type='entypo'
+          name='save'
+        />
+      </View>
+    ),
+    headerStyle: {
+      paddingRight: 10
+    }
   })
 
   componentWillMount() {
-    this.props.initRec(this.onResults);
+    this.props.initRec(this.onResults, this.onEnding);
+
+    const { state } = this.props.navigation;
+    const nota = state.params ? state.params.nota : null;
+    if (nota) {
+      _.each(nota, (value, prop) => {
+        this.props.notaChanged({ prop, value });
+      });
+    }
+  }
+
+  componentDidMount() {
+   this.props.navigation.setParams({
+     deletePress: this.deletePress.bind(this),
+     savePress: this.savePress.bind(this)
+   });
+  }
+
+  componentWillUnmount() {
+    this.props.resetNota();
   }
 
   onResults = (e) => {
     e.value.map(value => this.props.notaChanged({ prop: 'text', value }));
-  };
-
-  createPress = () => {
-    const { title, text, navigation } = this.props;
-    this.props.createNota({ title, text, navigation });
   }
+
+  onEnding = () => {
+    this.props.recordEnd();
+  }
+
+  savePress = () => {
+    const { title, text, navigation, uid } = this.props;
+    this.props.saveNota({ title, text, navigation, uid });
+  }
+
+  deletePress = () => {
+    const { uid, navigation } = this.props;
+    this.props.deleteNota({ uid, navigation });
+  };
 
   recPress = () => {
     this.props.startRecognizing();
+  }
+
+  renderMic = () => {
+    const { recording } = this.props;
+    console.log(recording);
+    if (recording) {
+      return <PulseIndicator color='blue' />;
+    }
+    return (
+      <Icon
+      title="Grabar"
+      size={50}
+      containerStyle={styles.iconStyle}
+      onPress={this.recPress.bind(this)}
+      backgroundColor="rgba(0,0,0,0)"
+      color="rgba(0,122,255,1)"
+      name='mic'
+      type='entypo'
+      />
+    );
   }
 
   render() {
@@ -47,29 +131,32 @@ class RecScreen extends Component {
           onChangeText={value => this.props.notaChanged({ prop: 'text', value })}
         />
         <FormValidationMessage>{this.props.error}</FormValidationMessage>
-        <Button
-          title='Record'
-          textStyle={{ fontSize: 20 }}
-          icon={{ name: 'check' }}
-          buttonStyle={{ marginTop: 20 }}
-          onPress={this.recPress.bind(this)}
-        />
-        <Button
-          title='Guardar'
-          textStyle={{ fontSize: 20 }}
-          icon={{ name: 'check' }}
-          buttonStyle={{ marginTop: 20 }}
-          onPress={this.createPress.bind(this)}
-        />
+        {this.renderMic()}
       </View>
     );
   }
 }
-// <Listener {...this.props} />
 
-const mapStateToProps = (state) => {
-  const { title, text, error } = state.notasRec;
-  return { title, text, error };
+const styles = {
+  iconStyle: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20
+  }
 };
 
-export default connect(mapStateToProps, { notaChanged, createNota, initRec, startRecognizing })(RecScreen);
+const mapStateToProps = (state) => {
+  const { title, text, error, uid, recording } = state.notasRec;
+  return { title, text, error, uid, recording };
+};
+
+export default connect(mapStateToProps, {
+  resetNota,
+  notaChanged,
+  saveNota,
+  initRec,
+  startRecognizing,
+  recordEnd,
+  deleteNota
+})(RecScreen);

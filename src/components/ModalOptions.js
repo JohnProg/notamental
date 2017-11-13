@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import Modal from 'react-native-modal';
-import { Button } from 'react-native-elements';
+import { Button, FormInput } from 'react-native-elements';
 
 class ModalOptions extends Component {
+  state = {
+    emailInvite: ''
+  }
+
+  handleInvite() {
+    this.props.sendInvite({ email: this.state.emailInvite });
+  }
+
   renderButton({ prop, action }) {
     return (
       <Button
@@ -15,10 +23,31 @@ class ModalOptions extends Component {
     );
   }
 
+  renderInvitation() {
+    return (
+      <View>
+        <FormInput
+          placeholder='email@colega.com'
+          inputStyle={{ fontSize: 18 }}
+          textAlignVertical={'top'}
+          value={this.state.emailInvite}
+          onChangeText={value => this.setState({ emailInvite: value })}
+        />
+        <Button
+          raised
+          icon={{ name: 'trash', type: 'entypo' }}
+          onPress={this.handleInvite.bind(this)}
+          title={'Enviar invitacion'}
+        />
+      </View>
+    );
+  }
+
   render() {
     return (
       <Modal
         isVisible={this.props.isVisible}
+        onBackdropPress={this.props.onBackdropPress}
         animationIn={'zoomInDown'}
         animationOut={'zoomOutUp'}
       >
@@ -26,7 +55,17 @@ class ModalOptions extends Component {
           <Text>
             Testing
           </Text>
-          {this.renderButton({ prop: 'Delete', action: this.props.deleteNota })}
+          {this.props.deleteNota ? (this.renderButton({
+            prop: 'BORRAR',
+            iconType: { name: 'trash', type: 'entypo' },
+            action: this.props.deleteNota
+          })) : null}
+          {this.props.inviteNota ? (this.renderButton({
+            prop: 'INVITAR',
+            iconType: { name: 'trash', type: 'entypo' },
+            action: this.props.inviteNota
+          })) : null}
+          {this.props.sendInvite ? this.renderInvitation() : null }
         </View>
       </Modal>
     );

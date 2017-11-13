@@ -4,11 +4,13 @@ import _ from 'lodash';
 import { FormInput, FormValidationMessage, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { PulseIndicator } from 'react-native-indicators';
+import ModalOptions from '../components/ModalOptions';
 import {
   resetNota,
   notaChanged,
   saveNota,
   deleteNota,
+  inviteNota,
   initRec,
   startRecognizing,
   recordEnd
@@ -21,6 +23,17 @@ class RecScreen extends Component {
     tabBarVisible: false,
     headerRight: (
       <View style={{ flexDirection: 'row' }}>
+        {navigation.state.params.showShare ?
+        <Icon
+        title="Compartir"
+        size={30}
+        onPress={() => navigation.state.params.sharePress()}
+        backgroundColor="rgba(0,0,0,0)"
+        color="rgba(0,122,255,1)"
+        type='entypo'
+        name='share'
+        containerStyle={{ marginRight: 10 }}
+        /> : null }
         <Icon
           title="Borrar"
           size={30}
@@ -47,8 +60,13 @@ class RecScreen extends Component {
     }
   })
 
+  state = {
+    isShareModalVisible: false
+  }
+
   componentWillMount() {
     this.props.initRec(this.onResults, this.onEnding);
+    this.props.navigation.setParams({ showShare: false });
 
     const { state } = this.props.navigation;
     const nota = state.params ? state.params.nota : null;
@@ -60,7 +78,8 @@ class RecScreen extends Component {
   }
 
   componentDidMount() {
-   this.props.navigation.setParams({
+    this.props.navigation.setParams({
+     sharePress: this.sharePress.bind(this),
      deletePress: this.deletePress.bind(this),
      savePress: this.savePress.bind(this)
    });
@@ -88,13 +107,25 @@ class RecScreen extends Component {
     this.props.deleteNota({ uid, navigation });
   };
 
+  sharePress = () => {
+    this.setState({ isShareModalVisible: true });
+  };
+
+  inviteNota({ email }) {
+    this.props.inviteNota({ email, uid: this.props.uid });
+  }
+
+  handleBackdropPress() {
+    this.setState({ isShareModalVisible: false });
+  }
+
+
   recPress = () => {
     this.props.startRecognizing();
   }
 
   renderMic = () => {
     const { recording } = this.props;
-    console.log(recording);
     if (recording) {
       return <PulseIndicator color='blue' />;
     }
@@ -132,6 +163,11 @@ class RecScreen extends Component {
         />
         <FormValidationMessage>{this.props.error}</FormValidationMessage>
         {this.renderMic()}
+        <ModalOptions
+          onBackdropPress={this.handleBackdropPress.bind(this)}
+          isVisible={this.state.isShareModalVisible}
+          sendInvite={this.inviteNota.bind(this)}
+        />
       </View>
     );
   }
@@ -156,6 +192,7 @@ export default connect(mapStateToProps, {
   notaChanged,
   saveNota,
   initRec,
+  inviteNota,
   startRecognizing,
   recordEnd,
   deleteNota

@@ -60,11 +60,15 @@ export const userLoggout = (navigation) => {
 
 
 const loginUserSuccess = (dispatch, user, navigation) => {
-  dispatch({
-    type: LOGIN_USER_SUCCESS,
-    payload: user
-  });
-  navigation.navigate('main');
+  const ref = firebase.database().ref(`/users/${user.uid}/`);
+  ref.set({ email: user.email })
+    .then(() => {
+      dispatch({
+        type: LOGIN_USER_SUCCESS,
+        payload: user
+      });
+      navigation.navigate('main');
+    });
 };
 
 const loginFailed = (dispatch, err) => {

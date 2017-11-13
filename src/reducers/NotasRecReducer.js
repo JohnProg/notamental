@@ -11,6 +11,7 @@ import {
 const INITIAL_STATE = {
   text: '',
   title: '',
+  uid: '',
   error: '',
   recording: false
 };
@@ -26,8 +27,8 @@ export default (state = INITIAL_STATE, action) => {
       return INITIAL_STATE;
     case SAVE_NOTA:
       return INITIAL_STATE;
-    case DELETE_NOTA:
-      return INITIAL_STATE;
+    // case DELETE_NOTA:
+    //   return INITIAL_STATE;
     case VOICE_START:
       return { ...state, recording: true };
     case VOICE_END:

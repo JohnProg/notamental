@@ -14,7 +14,7 @@ import SettingsScreen from './screens/SettingsScreen';
 
 class App extends Component {
   render() {
-    const MainNavigator = TabNavigator({  
+    const MainNavigator = TabNavigator({
       welcome: { screen: WelcomeScreen },
       login: { screen: LoginScreen },
       main: {
@@ -26,8 +26,9 @@ class App extends Component {
             screen: StackNavigator({
               review: { screen: ReviewScreen }
             })
-          }
-        }, {
+          },
+        },
+        {
             lazyLoad: true,
         })
       }

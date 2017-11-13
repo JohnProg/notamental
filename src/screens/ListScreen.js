@@ -6,7 +6,7 @@ import { List, ListItem, Avatar } from 'react-native-elements';
 import ActionButton from 'react-native-action-button';
 import firebase from 'react-native-firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { fetchNotas, notaChanged, deleteNota } from '../actions';
+import { fetchNotas, notaChanged, deleteNota, inviteNota } from '../actions';
 import ModalOptions from '../components/ModalOptions';
 
 class ListScreen extends Component {
@@ -34,16 +34,20 @@ class ListScreen extends Component {
   componentWillMount() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.props.fetchNotas({ user });
+        this.props.fetchNotas();
       }
     });
   }
 
   editNota = (nota) => {
+    this.handleNavigateRec(nota, { showShare: true });
+  }
+
+  handleNavigateRec(nota = null, showShare = false) {
     this.props.navigation.navigate('MainNavigator', {}, {
         type: 'Navigation/NAVIGATE',
         routeName: 'rec',
-        params: { nota }
+        params: { nota, showShare }
     });
   }
 
@@ -51,14 +55,23 @@ class ListScreen extends Component {
     return nota.uid;
   }
 
-  showModal = (selectedUid) => this.setState({ isModalVisible: true, selectedUid })
+  showModal = (selectedNota) => this.setState({ isModalVisible: true, selectedNota })
 
   hideModal = () => this.setState({ isModalVisible: false })
 
   handleDelete = () => {
-    this.props.deleteNota({ uid: this.state.selectedUid, navigation: this.props.navigation });
+    this.props.deleteNota({ nota: this.state.selectedNota, navigation: this.props.navigation });
     this.hideModal();
   };
+
+  handleInvite = () => {
+    this.props.inviteNota({ email: 'alberto@alberto.com', nota: this.state.selectedNota });
+  }
+
+  handleBackdropPress() {
+    this.setState({ isModalVisible: false });
+  }
+
 
   renderRow = (rowData) => {
     const nota = rowData.item;
@@ -82,12 +95,13 @@ class ListScreen extends Component {
         rightTitle={nota.timestamp}
         // label={'prueba'}
         onPress={() => this.editNota(nota)}
-        onLongPress={() => this.showModal(nota.uid)}
+        onLongPress={() => this.showModal(nota)}
       />
     );
   }
 
   render() {
+    console.log(this.props.navigation);
     return (
       <View style={{ flex: 1 }}>
         <List containerStyle={{ marginTop: 0 }}>
@@ -100,11 +114,13 @@ class ListScreen extends Component {
         </List>
         <ActionButton
           buttonColor="rgba(231,76,60,1)"
-          onPress={() => this.props.navigation.navigate('rec')}
+          onPress={this.handleNavigateRec.bind(this)}
         />
         <ModalOptions
+          onBackdropPress={this.handleBackdropPress.bind(this)}
           isVisible={this.state.isModalVisible}
           deleteNota={this.handleDelete.bind(this)}
+          inviteNota={this.handleInvite.bind(this)}
         />
       </View>
     );
@@ -112,10 +128,16 @@ class ListScreen extends Component {
 }
 
 const mapStateToProps = state => {
+  console.log(state.notas);
   const notas = _.map(state.notas, (val, uid) => {
    return { ...val, uid };
   });
   return { notas };
 };
 
-export default connect(mapStateToProps, { fetchNotas, notaChanged, deleteNota })(ListScreen);
+export default connect(mapStateToProps, {
+  fetchNotas,
+  notaChanged,
+  deleteNota,
+  inviteNota
+})(ListScreen);

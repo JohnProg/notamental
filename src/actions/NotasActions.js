@@ -51,15 +51,12 @@ export const saveNota = ({ title, text, navigation, uid }) => {
         timestamp: new Date(),
         ownerId: currentUser.uid,
         members: userMember
-      }).then(() => {
+      });
           const join = firebase.database().ref(`/editors/${currentUser.uid}`);
           const notaKey = { [ref.key]: true };
-          join.update(notaKey)
-          .then(() => {
+          join.update(notaKey);
             dispatch({ type: CREATE_NOTA });
             navigation.goBack();
-          });
-      });
     }
   };
 };
@@ -92,17 +89,12 @@ export const fetchNotas = () => {
           const refData = firebase.database().ref(`/notas/${index}`);
           refData.on('value', snapshotData => {
             if (!snapshotData.exists()) {
-              dispatch({
-                type: FETCH_NOTAS,
-                payload: snapshotData
-              });
               refData.off();
-            } else {
+            }
               dispatch({
                 type: FETCH_NOTAS,
                 payload: snapshotData
               });
-            }
           });
         });
     });

@@ -1,4 +1,5 @@
 import {
+  PROP_CHANGED,
   EMAIL_CHANGED,
   PASSWORD_CHANGED,
   LOADING_USER,
@@ -18,6 +19,8 @@ const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case PROP_CHANGED:
+      return { ...state, [action.payload.prop]: action.payload.value };
     case EMAIL_CHANGED:
       return { ...state, email: action.payload };
     case PASSWORD_CHANGED:

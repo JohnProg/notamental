@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
-import { FormLabel, FormInput, FormValidationMessage, Button } from 'react-native-elements';
+import { Card, FormLabel, FormInput, FormValidationMessage, Button } from 'react-native-elements';
 import firebase from 'react-native-firebase';
+import { GoogleSigninButton } from 'react-native-google-signin';
 
-import { emailChanged, passwordChanged, loginUser, userLogged } from '../actions';
+import { propChanged, loginUser, userLogged, googleLogin } from '../actions';
 import { Spinner } from '../components/common';
 
 class LoginScreen extends Component {
@@ -18,12 +19,12 @@ class LoginScreen extends Component {
     });
   }
 
-  onEmailChange = (email) => {
-    this.props.emailChanged(email);
+  onPropChange({ prop, value }) {
+    this.props.propChanged({ prop, value });
   }
 
-  onPasswordChange = (password) => {
-    this.props.passwordChanged(password);
+  onSignUp() {
+    this.props.navigation.navigate('register');
   }
 
   loginPress = () => {
@@ -31,46 +32,61 @@ class LoginScreen extends Component {
     this.props.loginUser({ email, password, navigation });
   }
 
-  renderButton = () => {
+  loginGooglePress() {
+    this.props.googleLogin(this.props.navigation);
+  }
+
+  renderButton() {
     if (this.props.loading) {
       return <Spinner />;
     }
     return (
-      <Button
-        title='Login'
-        textStyle={{ fontSize: 20 }}
-        icon={{ name: 'check' }}
-        buttonStyle={{ marginTop: 20 }}
-        onPress={this.loginPress}
-      />
+      <View>
+        <Button
+          title='Acceder'
+          buttonStyle={{ marginTop: 20 }}
+          backgroundColor="#03A9F4"
+          icon={{ name: 'check' }}
+          onPress={this.loginPress.bind(this)}
+        />
+        <Button
+          title='Registrarse'
+          buttonStyle={{ marginTop: 20 }}
+          backgroundColor="#03A9F4"
+          icon={{ name: 'check' }}
+          onPress={this.onSignUp.bind(this)}
+        />
+        <Button
+          title='Entra con Google'
+          buttonStyle={{ marginTop: 20 }}
+          backgroundColor="#FF2400"
+          icon={{ name: 'google--with-circle', type: 'entypo', size: 28 }}
+          onPress={this.loginGooglePress.bind(this)}
+        />
+      </View>
     );
   }
 
   render() {
     return (
-      <View>
-        <FormLabel labelStyle={{ fontSize: 18 }} >
-          Name
-        </FormLabel>
-        <FormInput
-          inputStyle={{ fontSize: 18 }}
-          placeholder="user@domain.com"
-          value={this.props.email}
-          onChangeText={this.onEmailChange}
-        />
-        <FormLabel labelStyle={{ fontSize: 18 }} >
-          Password
-        </FormLabel>
-        <FormInput
-          secureTextEntry
-          inputStyle={{ fontSize: 18 }}
-          placeholder="Password"
-          value={this.props.password}
-          onChangeText={this.onPasswordChange}
-        />
-        <FormValidationMessage>{this.props.err}</FormValidationMessage>
-
-        {this.renderButton()}
+      <View style={{ paddingVertical: 20 }}>
+        <Card>
+          <FormLabel>Name</FormLabel>
+          <FormInput
+            placeholder="usuario@dominio.com"
+            value={this.props.email}
+            onChangeText={value => this.onPropChange({ prop: 'email', value })}
+          />
+          <FormLabel>Password</FormLabel>
+          <FormInput
+            secureTextEntry
+            placeholder="Password"
+            value={this.props.password}
+            onChangeText={value => this.onPropChange({ prop: 'password', value })}
+          />
+          <FormValidationMessage>{this.props.err}</FormValidationMessage>
+          {this.renderButton()}
+        </Card>
       </View>
     );
   }
@@ -85,8 +101,8 @@ const mapStateToProps = ({ login }) => {
 };
 
 export default connect(mapStateToProps, {
-  emailChanged,
-  passwordChanged,
+  propChanged,
   loginUser,
-  userLogged
+  userLogged,
+  googleLogin
 })(LoginScreen);

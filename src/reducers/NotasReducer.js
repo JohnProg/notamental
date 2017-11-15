@@ -4,7 +4,7 @@ import {
   INVITE_USER
 } from '../actions/types';
 
-const INITIAL_STATE = {};
+const INITIAL_STATE = null;
 
 export default (state = INITIAL_STATE, action) => {
   console.log(action);
@@ -12,6 +12,9 @@ export default (state = INITIAL_STATE, action) => {
     case FETCH_NOTAS: {
       if (!action.payload.exists()) {
         _.unset(state, action.payload.key);
+        if (_.isEmpty(state)) {
+          return INITIAL_STATE;
+        }
         return state;
       }
       return { ...state, [action.payload.key]: action.payload.val() };

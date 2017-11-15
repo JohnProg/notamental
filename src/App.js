@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from './store';
 
 import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import RecScreen from './screens/RecScreen';
 import ListScreen from './screens/ListScreen';
@@ -16,7 +17,12 @@ class App extends Component {
   render() {
     const MainNavigator = TabNavigator({
       welcome: { screen: WelcomeScreen },
-      login: { screen: LoginScreen },
+      auth: {
+        screen: StackNavigator({
+          login: { screen: LoginScreen },
+          register: { screen: RegisterScreen },
+        })
+      },
       main: {
         screen: StackNavigator({
           list: { screen: ListScreen },
@@ -30,12 +36,14 @@ class App extends Component {
         },
         {
             lazyLoad: true,
+            swipeEnabled: false,
         })
       }
     }, {
       navigationOptions: {
         tabBarVisible: false
       },
+      swipeEnabled: false,
       lazyLoad: true
     });
 

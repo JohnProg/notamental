@@ -116,6 +116,12 @@ android {
         }
     }
     signingConfigs {
+        debug {
+          storeFile file(MYAPP_RELEASE_STORE_FILE)
+          storePassword MYAPP_RELEASE_STORE_PASSWORD
+          keyAlias MYAPP_RELEASE_KEY_ALIAS
+          keyPassword MYAPP_RELEASE_KEY_PASSWORD
+        }
         release {
             if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
                 storeFile file(MYAPP_RELEASE_STORE_FILE)
@@ -148,6 +154,10 @@ android {
 }
 
 dependencies {
+    compile(project(":react-native-google-signin")){
+      exclude group: "com.google.android.gms" // very important
+    }
+    compile 'com.google.android.gms:play-services-auth:11.4.2' // should be at least 9.0.0
     compile project(':react-native-voice')
     compile project(':react-native-vector-icons')
     compile(project(':react-native-firebase')) {

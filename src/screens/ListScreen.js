@@ -101,7 +101,6 @@ class ListScreen extends Component {
   }
 
   render() {
-    console.log(this.props.navigation);
     return (
       <View style={{ flex: 1 }}>
         <List containerStyle={{ marginTop: 0 }}>
@@ -128,7 +127,8 @@ class ListScreen extends Component {
 }
 
 const mapStateToProps = state => {
-  console.log(state.notas);
+  console.log('mapstateToprops', state);
+  // if (_.isEmpty(state.nota)
   const notas = _.map(state.notas, (val, uid) => {
    return { ...val, uid };
   });

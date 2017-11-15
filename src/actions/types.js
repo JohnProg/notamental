@@ -1,5 +1,6 @@
 export const EMAIL_CHANGED = 'email_changed';
 export const PASSWORD_CHANGED = 'password_changed';
+export const PROP_CHANGED = 'prop_changed';
 
 export const LOADING_USER = 'loading_user';
 export const LOGIN_USER_SUCCESS = 'login_user_success';

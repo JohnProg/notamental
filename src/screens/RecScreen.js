@@ -3,8 +3,11 @@ import { View } from 'react-native';
 import _ from 'lodash';
 import { FormInput, FormValidationMessage, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
-import { PulseIndicator } from 'react-native-indicators';
+import ActionButton from 'react-native-action-button';
+import { BubblesLoader, TextLoader } from 'react-native-indicator';
 import ModalOptions from '../components/ModalOptions';
+import ItemsList from '../components/ItemsList';
+
 import {
   resetNota,
   notaChanged,
@@ -127,47 +130,35 @@ class RecScreen extends Component {
   renderMic = () => {
     const { recording } = this.props;
     if (recording) {
-      return <PulseIndicator color='blue' />;
+      return (
+        <View>
+          <BubblesLoader />
+          <TextLoader text='Escuchando' />
+        </View>
+      );
     }
     return (
-      <Icon
-      title="Grabar"
-      size={50}
-      containerStyle={styles.iconStyle}
-      onPress={this.recPress.bind(this)}
-      backgroundColor="rgba(0,0,0,0)"
-      color="rgba(0,122,255,1)"
-      name='mic'
-      type='entypo'
+      <ActionButton
+        buttonColor="rgba(231,76,60,1)"
+        icon={<Icon name='mic' size={22} />}
+        onPress={this.recPress.bind(this)}
       />
     );
   }
 
   render() {
     return (
-      <View>
-        <FormInput
-          inputStyle={{ fontSize: 18 }}
-          placeholder='Titulo'
-          value={this.props.title}
-          onChangeText={value => this.props.notaChanged({ prop: 'title', value })}
-        />
-        <FormInput
-          placeholder='Escribe tu nota aquí'
-          inputStyle={{ fontSize: 18 }}
-          numberOfLines={8}
-          textAlignVertical={'top'}
-          multiline
-          value={this.props.text}
-          onChangeText={value => this.props.notaChanged({ prop: 'text', value })}
+      <View style={{ flex: 1 }}>
+        <ItemsList
+          items={this.props.text}
         />
         <FormValidationMessage>{this.props.error}</FormValidationMessage>
-        {this.renderMic()}
         <ModalOptions
           onBackdropPress={this.handleBackdropPress.bind(this)}
           isVisible={this.state.isShareModalVisible}
           sendInvite={this.inviteNota.bind(this)}
         />
+        {this.renderMic()}
       </View>
     );
   }
@@ -197,3 +188,19 @@ export default connect(mapStateToProps, {
   recordEnd,
   deleteNota
 })(RecScreen);
+
+// <FormInput
+//   inputStyle={{ fontSize: 18 }}
+//   placeholder='Titulo'
+//   value={this.props.title}
+//   onChangeText={value => this.props.notaChanged({ prop: 'title', value })}
+// />
+// <FormInput
+//   placeholder='Escribe tu nota aquí'
+//   inputStyle={{ fontSize: 18 }}
+//   numberOfLines={8}
+//   textAlignVertical={'top'}
+//   multiline
+//   value={this.props.text}
+//   onChangeText={value => this.props.notaChanged({ prop: 'text', value })}
+// />

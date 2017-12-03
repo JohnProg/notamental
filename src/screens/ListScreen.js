@@ -44,11 +44,19 @@ class ListScreen extends Component {
   }
 
   handleNavigateRec(nota = null, showShare = false) {
-    this.props.navigation.navigate('MainNavigator', {}, {
-        type: 'Navigation/NAVIGATE',
-        routeName: 'rec',
-        params: { nota, showShare }
-    });
+    if (nota) {
+      this.props.navigation.navigate('MainNavigator', {}, {
+          type: 'Navigation/NAVIGATE',
+          routeName: 'rec',
+          params: { type: 'list', nota, showShare, title: nota.title }
+      });
+    } else {
+      this.props.navigation.navigate('MainNavigator', {}, {
+          type: 'Navigation/NAVIGATE',
+          routeName: 'rec',
+          params: { type: 'list', nota, showShare }
+      });
+    }
   }
 
   keyExtractor(nota) {
@@ -72,6 +80,12 @@ class ListScreen extends Component {
     this.setState({ isModalVisible: false });
   }
 
+  evaluateString(nota) {
+    if (nota.text[0]) {
+      return nota.text.join();
+    } return nota.text;
+  }
+
 
   renderRow = (rowData) => {
     const nota = rowData.item;
@@ -91,7 +105,7 @@ class ListScreen extends Component {
         avatarStyle={{ flex: 1 }}
         key={nota.uid}
         title={nota.title}
-        subtitle={nota.text}
+        subtitle={nota.text.constructor === Array ? nota.text.join() : nota.text}
         rightTitle={nota.timestamp}
         // label={'prueba'}
         onPress={() => this.editNota(nota)}
@@ -127,8 +141,6 @@ class ListScreen extends Component {
 }
 
 const mapStateToProps = state => {
-  console.log('mapstateToprops', state);
-  // if (_.isEmpty(state.nota)
   const notas = _.map(state.notas, (val, uid) => {
    return { ...val, uid };
   });

@@ -20,7 +20,6 @@ class WelcomeScreen extends Component {
   }
 
   render() {
-    console.log('Welcome');
     return (
       <Slides
         data={SLIDE_DATA}

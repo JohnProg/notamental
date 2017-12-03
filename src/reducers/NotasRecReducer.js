@@ -9,7 +9,7 @@ import {
 } from '../actions/types';
 
 const INITIAL_STATE = {
-  text: '',
+  text: [],
   title: '',
   uid: '',
   error: '',
@@ -29,7 +29,7 @@ export default (state = INITIAL_STATE, action) => {
     // case DELETE_NOTA:
     //   return INITIAL_STATE;
     case VOICE_START:
-      return { ...state, recording: true };
+      return { ...state, recording: action.payload };
     case VOICE_END:
       return { ...state, recording: false };
     default:

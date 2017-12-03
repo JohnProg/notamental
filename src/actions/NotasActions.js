@@ -20,6 +20,7 @@ export const resetNota = () => {
   if (record) {
     Voice.destroy()
       .then(Voice.removeAllListeners);
+    record = false;
   }
   return { type: RESET_NOTA };
 };
@@ -134,13 +135,13 @@ export const initRec = (onResults, onEnding) => {
   };
 };
 
-export const startRecognizing = () => {
+export const startRecognizing = (recording) => {
   return (dispatch) => {
     Voice.start('es-ES')
       .then(() => {
         dispatch({
           type: VOICE_START,
-          payload: true
+          payload: recording
         });
       }).catch((e) => {
         dispatch({

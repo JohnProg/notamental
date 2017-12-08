@@ -15,6 +15,7 @@ export const DELETE_NOTA = 'delete_nota';
 export const FETCH_NOTAS = 'fetch_notas';
 export const RESET_NOTA = 'reset_nota';
 export const INVITE_NOTA = 'invite_nota';
+export const EDIT_NOTA = 'edit_nota';
 
 export const VOICE_START = 'voice_start';
 export const VOICE_INIT = 'voice_init';

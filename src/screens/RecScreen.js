@@ -57,21 +57,22 @@ class RecScreen extends Component {
           name='trash'
           containerStyle={{ marginRight: 10 }}
         />
-        <Icon
-          title="Guardar"
-          size={30}
-          onPress={() => navigation.state.params.savePress()}
-          backgroundColor="rgba(0,0,0,0)"
-          color="rgba(0,122,255,1)"
-          type='entypo'
-          name='save'
-        />
       </View>
     ),
     headerStyle: {
       paddingRight: 10
     }
   })
+
+  // <Icon
+  //   title="Guardar"
+  //   size={30}
+  //   onPress={() => navigation.state.params.savePress()}
+  //   backgroundColor="rgba(0,0,0,0)"
+  //   color="rgba(0,122,255,1)"
+  //   type='entypo'
+  //   name='save'
+  // />
 
   state = {
     isShareModalVisible: false,
@@ -82,14 +83,14 @@ class RecScreen extends Component {
     this.props.initRec(this.onResults, this.onEnding);
     this.props.navigation.setParams({ showShare: false });
 
-    const { state } = this.props.navigation;
-    const nota = state.params ? state.params.nota : null;
-    if (nota) {
-      this.props.navigation.setParams({ title: nota.title });
-      _.each(nota, (value, prop) => {
-        this.props.notaChanged({ prop, value });
-      });
-    }
+    // const { state } = this.props.navigation;
+    // const nota = state.params ? state.params.nota : null;
+    // if (nota) {
+    //   this.props.navigation.setParams({ title: nota.title });
+    //   _.each(nota, (value, prop) => {
+    //     this.props.notaChanged({ prop, value });
+    //   });
+    // }
   }
 
   componentDidMount() {
@@ -102,6 +103,7 @@ class RecScreen extends Component {
   }
 
   componentWillUnmount() {
+    this.savePress();
     this.props.resetNota();
   }
 
@@ -185,7 +187,7 @@ class RecScreen extends Component {
     return (
       <View style={{ flex: 1 }} >
           <ItemsList
-            items={this.props.text}
+            items={this.props.text.join() ? this.props.text : [' ']}
             onFocus={this.props.recording}
             onChangeText={this.props.notaChanged}
           />

@@ -5,6 +5,7 @@ import {
   VOICE_END,
   SAVE_NOTA,
   DELETE_NOTA,
+  EDIT_NOTA,
   RESET_NOTA
 } from '../actions/types';
 
@@ -28,6 +29,10 @@ export default (state = INITIAL_STATE, action) => {
       return INITIAL_STATE;
     // case DELETE_NOTA:
     //   return INITIAL_STATE;
+    case EDIT_NOTA: {
+      const { text, title, uid } = action.payload;
+      return { ...state, text, title, uid };
+    }
     case VOICE_START:
       return { ...state, recording: action.payload };
     case VOICE_END:

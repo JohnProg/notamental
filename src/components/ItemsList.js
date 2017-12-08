@@ -11,10 +11,15 @@ class ItemsList extends Component {
     postText: '',
     items: [],
     position: '',
-    inputHeight: 0
+    inputHeight: 0,
+    strikeStyle: ''
   }
 
   componentWillMount() {
+  }
+
+  componentDidMount() {
+    console.log(this.props.items);
   }
 
   onChangeItem(value) {
@@ -25,9 +30,15 @@ class ItemsList extends Component {
     console.log('onKeyItem: ', value);
   }
 
+  onRightActionRelease(i) {
+    // const { items } = this.props;
+    // items[i] = items[i].concat('<strike>');
+    // this.props.onChangeText({ prop: 'text', value: items });
+  }
+
   addTextInput(index, text = '') {
     const { items } = this.props;
-    items.splice(index, 0, text);
+    items.splice(index, 0, !text ? ' ' : text);
     this.props.onChangeText({ prop: 'text', value: items });
     this.setState({ items });
   }
@@ -52,26 +63,49 @@ class ItemsList extends Component {
           size={28}
           name='dot-single'
           type='entypo'
+          color={i === this.props.items.length - 1 ? '#a9a9a9' : 'black'}
         />);
   }
 
+  renderRightContent() {
+    return (
+      <Icon
+        title="check"
+        size={28}
+        name='check'
+        type='entypo'
+      />
+    );
+  }
+
+  renderPlaceholder(i) {
+    const { items } = this.props;
+    if (i === items.length - 1) {
+      return 'Añadir Item';
+    } return '';
+  }
+
   renderList(text) {
+    console.log(text.length);
     if (text[text.length - 1]) {
       text.push('');
     }
     return text.map((item, i) => (
       <Swipeable
         key={i}
-        rightContent={<Text>otraadasdas</Text>}
+        rightContent={this.renderRightContent()}
+        onRightActionRelease={() => this.onRightActionRelease(i)}
       >
         <View key={i} style={styles.listItemsStyle}>
           {this.renderIcon(i)}
           <TextInput
             multiline
             ref={i}
-            placeholder='Item'
+            placeholder={this.renderPlaceholder(i)}
             returnKeyType="next"
-            style={[styles.inputStyle, { height: Math.max(35, this.state.inputHeight) }]}
+            style={[
+              styles.inputStyle,
+              { height: Math.max(35, this.state.inputHeight) }]}
             fontSize={18}
             clearButtonMode='always'
             underlineColorAndroid='transparent'
@@ -79,8 +113,9 @@ class ItemsList extends Component {
             defaultValue={item}
             blurOnSubmit
             onContentSizeChange={(event) => this.handleSizeChange(event)}
-            onSelectionChange={(event) =>
-              this.setState({ position: event.nativeEvent.selection.start })}
+            onSelectionChange={(event) => {
+              this.setState({ position: event.nativeEvent.selection.start });
+            }}
             onChangeText={value => {
               const newItems = text;
               newItems[i] = value;
@@ -91,9 +126,13 @@ class ItemsList extends Component {
               this.props.onChangeText({ prop: 'text', value: newItems });
             }}
             onSubmitEditing={(event) => {
+              console.log('wekee: ', text, ' fliki: ', i);
               const initText = event.nativeEvent.text;
               const newItems = text;
               newItems[i] = initText.substring(0, this.state.position);
+              if (!newItems[i]) {
+                newItems[i] = ' ';
+              }
               this.props.onChangeText({
                 prop: 'text',
                 value: newItems
@@ -108,14 +147,12 @@ class ItemsList extends Component {
 
 
   render() {
-    const list = ['', ''];
     return (
       <ScrollView>
         <Card
           containerStyle={{ marginTop: 10, minHeight: 300 }}
         >
-          {this.props.items[0] ?
-            this.renderList(this.props.items) : this.renderList(list)}
+          {this.renderList(this.props.items)}
         </Card>
       </ScrollView>
     );
@@ -140,7 +177,7 @@ const styles = {
       paddingBottom: 0,
       paddingLeft: 0,
       backgroundColor: '#fff',
-      color: '#424242',
+      color: '#424242'
   },
 };
 

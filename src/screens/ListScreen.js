@@ -6,7 +6,7 @@ import { List, ListItem, Avatar } from 'react-native-elements';
 import ActionButton from 'react-native-action-button';
 import firebase from 'react-native-firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { fetchNotas, notaChanged, deleteNota, inviteNota } from '../actions';
+import { fetchNotas, notaChanged, deleteNota, inviteNota, editNota } from '../actions';
 import ModalOptions from '../components/ModalOptions';
 
 class ListScreen extends Component {
@@ -45,6 +45,7 @@ class ListScreen extends Component {
 
   handleNavigateRec(nota = null, showShare = false) {
     if (nota) {
+      this.props.editNota({ nota });
       this.props.navigation.navigate('MainNavigator', {}, {
           type: 'Navigation/NAVIGATE',
           routeName: 'rec',
@@ -89,25 +90,25 @@ class ListScreen extends Component {
 
   renderRow = (rowData) => {
     const nota = rowData.item;
+    const date = new Date(nota.timestamp);
     return (
       <ListItem
         roundAvatar
         avatar={
           <Avatar
-            // small
             rounded
             icon={{ name: 'shopping-cart', color: 'white' }}
             overlayContainerStyle={{ backgroundColor: 'green' }}
-            // activeOpacity={0.7}
-            // containerStyle={{ flex: 2, marginLeft: 20, marginTop: 115 }}
           />
         }
         avatarStyle={{ flex: 1 }}
         key={nota.uid}
         title={nota.title}
-        subtitle={nota.text.constructor === Array ? nota.text.join() : nota.text}
-        rightTitle={nota.timestamp}
-        // label={'prueba'}
+        subtitle={nota.text ? (nota.text.constructor === Array ? nota.text.join() : nota.text) : null}
+        rightTitle={
+          `${date.getDate()}/${parseInt(date.getMonth() + 1, 10)}/${date.getFullYear()}\n${date.getHours()}:${(date.getMinutes() < 10 ? '0' : '') + date.getMinutes()}`
+        }
+        rightTitleNumberOfLines={2}
         onPress={() => this.editNota(nota)}
         onLongPress={() => this.showModal(nota)}
       />
@@ -151,5 +152,6 @@ export default connect(mapStateToProps, {
   fetchNotas,
   notaChanged,
   deleteNota,
+  editNota,
   inviteNota
 })(ListScreen);

@@ -11,7 +11,8 @@ import {
   VOICE_START,
   VOICE_END,
   VOICE_INIT,
-  RESET_NOTA
+  RESET_NOTA,
+  EDIT_NOTA
 } from './types';
 
 let record = false;
@@ -28,6 +29,11 @@ export const resetNota = () => {
 export const notaChanged = ({ prop, value }) => ({
     type: NOTA_CHANGED,
     payload: { prop, value }
+});
+
+export const editNota = ({ nota }) => ({
+  type: EDIT_NOTA,
+  payload: nota
 });
 
 

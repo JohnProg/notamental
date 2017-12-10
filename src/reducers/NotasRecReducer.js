@@ -10,9 +10,24 @@ import {
 } from '../actions/types';
 
 const INITIAL_STATE = {
-  text: [],
-  title: '',
-  uid: '',
+  nota: {
+    text: [{
+      val: '',
+      style: {
+        flex: 1,
+        paddingTop: 0,
+        paddingRight: 0,
+        paddingBottom: 0,
+        paddingLeft: 0,
+        backgroundColor: '#fff',
+        color: '#424242'
+      }
+    }],
+    title: '',
+    uid: '',
+    timestamp: '',
+    members: ''
+  },
   error: '',
   recording: false
 };
@@ -20,7 +35,7 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case NOTA_CHANGED:
-      return { ...state, [action.payload.prop]: action.payload.value };
+      return { ...state, nota: { ...state.nota, [action.payload.prop]: action.payload.value } };
     case RESET_NOTA:
       return INITIAL_STATE;
     case CREATE_NOTA:
@@ -30,8 +45,7 @@ export default (state = INITIAL_STATE, action) => {
     // case DELETE_NOTA:
     //   return INITIAL_STATE;
     case EDIT_NOTA: {
-      const { text, title, uid } = action.payload;
-      return { ...state, text, title, uid };
+      return { ...state, nota: action.payload };
     }
     case VOICE_START:
       return { ...state, recording: action.payload };

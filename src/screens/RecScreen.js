@@ -18,6 +18,19 @@ import {
   recordEnd
 } from '../actions';
 
+const INITIAL_STATE = {
+  val: '',
+  style: {
+    flex: 1,
+    paddingTop: 0,
+    paddingRight: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    backgroundColor: '#fff',
+    color: '#424242'
+  }
+};
+
 class RecScreen extends Component {
 
   static navigationOptions = ({ navigation }) => (
@@ -82,15 +95,6 @@ class RecScreen extends Component {
   componentWillMount() {
     this.props.initRec(this.onResults, this.onEnding);
     this.props.navigation.setParams({ showShare: false });
-
-    // const { state } = this.props.navigation;
-    // const nota = state.params ? state.params.nota : null;
-    // if (nota) {
-    //   this.props.navigation.setParams({ title: nota.title });
-    //   _.each(nota, (value, prop) => {
-    //     this.props.notaChanged({ prop, value });
-    //   });
-    // }
   }
 
   componentDidMount() {
@@ -116,9 +120,9 @@ class RecScreen extends Component {
         this.props.notaChanged({ prop: 'recording', value: 0 });
         recording = 0;
       }
-      newItems[this.props.recording] = value;
+      newItems[this.props.recording] = { val: value };
     } else {
-      newItems = value;
+      newItems = { val: value };
     }
     this.props.notaChanged({ prop: 'text', value: newItems });
   }
@@ -129,12 +133,14 @@ class RecScreen extends Component {
 
   savePress = () => {
     const { title, text, navigation, uid } = this.props;
-    this.props.saveNota({ title, text, navigation, uid });
+    const str = text.map(item => item.val);
+    console.log('uid', uid);
+    if (title || str.join()) this.props.saveNota({ title, text, navigation, uid });
   }
 
   deletePress = () => {
-    const { uid, navigation } = this.props;
-    this.props.deleteNota({ uid, navigation });
+    const { nota, navigation } = this.props;
+    this.props.deleteNota({ nota, navigation });
   };
 
   sharePress = () => {
@@ -187,7 +193,7 @@ class RecScreen extends Component {
     return (
       <View style={{ flex: 1 }} >
           <ItemsList
-            items={this.props.text.join() ? this.props.text : [' ']}
+            items={this.props.text}
             onFocus={this.props.recording}
             onChangeText={this.props.notaChanged}
           />
@@ -218,8 +224,9 @@ const styles = {
 };
 
 const mapStateToProps = (state) => {
-  const { title, text, error, uid, recording } = state.notasRec;
-  return { title, text, error, uid, recording };
+  const { title, text, uid } = state.notasRec.nota;
+  const { error, recording, nota } = state.notasRec;
+  return { title, text, error, uid, recording, nota };
 };
 
 export default connect(mapStateToProps, {

@@ -81,10 +81,13 @@ class ListScreen extends Component {
     this.setState({ isModalVisible: false });
   }
 
-  evaluateString(nota) {
-    if (nota.text[0]) {
-      return nota.text.join();
-    } return nota.text;
+  // evaluateString(nota) {
+  //   if (nota.text[0]) {
+  //     return nota.text.join();
+  //   } return nota.text;
+  // }
+
+  renderSubtitle() {
   }
 
 
@@ -104,7 +107,7 @@ class ListScreen extends Component {
         avatarStyle={{ flex: 1 }}
         key={nota.uid}
         title={nota.title}
-        subtitle={nota.text ? (nota.text.constructor === Array ? nota.text.join() : nota.text) : null}
+        subtitle={nota.text ? (nota.text.constructor === Array ? nota.text[0].val : nota.text.val) : null}
         rightTitle={
           `${date.getDate()}/${parseInt(date.getMonth() + 1, 10)}/${date.getFullYear()}\n${date.getHours()}:${(date.getMinutes() < 10 ? '0' : '') + date.getMinutes()}`
         }

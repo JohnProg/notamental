@@ -4,6 +4,19 @@ import { List, ListItem, FormInput, Icon, Card } from 'react-native-elements';
 import { DotsLoader } from 'react-native-indicator';
 import Swipeable from 'react-native-swipeable';
 
+const INITIAL_STATE = {
+  val: '',
+  style: {
+    flex: 1,
+    paddingTop: 0,
+    paddingRight: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    backgroundColor: '#fff',
+    color: '#424242'
+  }
+};
+
 class ItemsList extends Component {
   state = {
     onChange: '',
@@ -16,10 +29,10 @@ class ItemsList extends Component {
   }
 
   componentWillMount() {
+    console.log(this.props.items);
   }
 
   componentDidMount() {
-    console.log(this.props.items);
   }
 
   onChangeItem(value) {
@@ -31,14 +44,14 @@ class ItemsList extends Component {
   }
 
   onRightActionRelease(i) {
-    // const { items } = this.props;
-    // items[i] = items[i].concat('<strike>');
-    // this.props.onChangeText({ prop: 'text', value: items });
+    const { items } = this.props;
+    items[i].style = { textDecorationLine: 'line-through' };
+    this.props.onChangeText({ prop: 'text', value: items });
   }
 
   addTextInput(index, text = '') {
     const { items } = this.props;
-    items.splice(index, 0, !text ? ' ' : text);
+    items.splice(index, 0, !text ? { val: ' ', spaceOffset: true } : { val: text });
     this.props.onChangeText({ prop: 'text', value: items });
     this.setState({ items });
   }
@@ -86,9 +99,8 @@ class ItemsList extends Component {
   }
 
   renderList(text) {
-    console.log(text.length);
-    if (text[text.length - 1]) {
-      text.push('');
+    if (text[text.length - 1].val !== '') {
+      text.push(INITIAL_STATE);
     }
     return text.map((item, i) => (
       <Swipeable
@@ -104,13 +116,13 @@ class ItemsList extends Component {
             placeholder={this.renderPlaceholder(i)}
             returnKeyType="next"
             style={[
-              styles.inputStyle,
+              { ...styles.inputStyle }, item.style,
               { height: Math.max(35, this.state.inputHeight) }]}
             fontSize={18}
             clearButtonMode='always'
             underlineColorAndroid='transparent'
             containerStyle={{ marginLeft: 0 }}
-            defaultValue={item}
+            defaultValue={item.val}
             blurOnSubmit
             onContentSizeChange={(event) => this.handleSizeChange(event)}
             onSelectionChange={(event) => {
@@ -118,20 +130,29 @@ class ItemsList extends Component {
             }}
             onChangeText={value => {
               const newItems = text;
-              newItems[i] = value;
+              if (newItems[i].spaceOffset) {
+                newItems[i] = {
+                  val: value.trim(),
+                  spaceOffset: false
+                };
+              } else {
+                newItems[i] = { val: value };
+              }
               if (!value && (i !== 0)) {
                 newItems.splice(i, 1);
                 this.refs[i - 1].focus();
+                // console.log(this.refs[i - 1]);
+                // this.setState({ position: text[i - 1].val.length - 1 });
               }
               this.props.onChangeText({ prop: 'text', value: newItems });
             }}
             onSubmitEditing={(event) => {
-              console.log('wekee: ', text, ' fliki: ', i);
               const initText = event.nativeEvent.text;
+              console.log('event', event.nativeEvent);
               const newItems = text;
-              newItems[i] = initText.substring(0, this.state.position);
-              if (!newItems[i]) {
-                newItems[i] = ' ';
+              newItems[i] = { val: initText.substring(0, this.state.position) };
+              if (!newItems[i].val) {
+                newItems[i] = { val: ' ' };
               }
               this.props.onChangeText({
                 prop: 'text',

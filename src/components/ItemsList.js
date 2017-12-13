@@ -98,9 +98,10 @@ class ItemsList extends Component {
   }
 
   renderList(text) {
-    if (text[text.length - 1].val !== '') {
+    if (text[text.length - 1].val !== '' || text.length === 1) {
       text.push(INITIAL_STATE);
     }
+    if (0) console.log('weke');
     return text.map((item, i) => (
       <Swipeable
         key={i}
@@ -122,19 +123,22 @@ class ItemsList extends Component {
             containerStyle={{ marginLeft: 0 }}
             defaultValue={item.val}
             blurOnSubmit
-            onFocus={() => this.props.onChangeText({ prop: 'focused', value: i })}
+            onFocus={() => {
+              if (i === 0 && text.length === 0) text.push('');
+              //this.props.onChangeText({ prop: 'position', value: -1 });
+              this.props.onChangeText({ prop: 'focused', value: i });
+            }}
             onContentSizeChange={(event) => this.handleSizeChange(event, i)}
             onSelectionChange={(event) => {
-              this.setState({ position: event.nativeEvent.selection.start });
+              const { start } = event.nativeEvent.selection;
+              this.props.onChangeText({ prop: 'position', value: start });
+              this.setState({ position: start });
             }}
             onChangeText={value => {
               const newItems = text;
               if (newItems[i].spaceOffset) {
-                newItems[i] = {
-                  ...newItems[i],
-                  val: value.trim(),
-                  spaceOffset: false
-                };
+                newItems[i].val = value.trim();
+                newItems[i].spaceOffset = false;
               } else {
                 newItems[i].val = value;
               }
@@ -146,18 +150,18 @@ class ItemsList extends Component {
             }}
             onSubmitEditing={(event) => {
               const initText = event.nativeEvent.text;
-              console.log('event', event.nativeEvent);
               const newItems = text;
-              newItems[i] = { val: initText.substring(0, this.state.position) };
+              newItems[i].val = initText.substring(0, this.props.position);
               if (!newItems[i].val) {
-                newItems[i] = { val: ' ' };
+                newItems[i].val = ' ';
               }
               this.props.onChangeText({
                 prop: 'text',
                 value: newItems
               });
-              this.addTextInput(i + 1, initText.substring(this.state.position));
+              this.addTextInput(i + 1, initText.substring(this.props.position));
               this.refs[(i + 1)].focus();
+              this.props.onChangeText({ prop: 'position', value: 0 });
             }}
           />
         </View>

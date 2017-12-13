@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import {
   FETCH_NOTAS,
-  INVITE_USER
+  INVITE_USER,
+  DELETE_NOTA
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -10,7 +11,6 @@ const INITIAL_STATE = {
 };
 
 export default (state = INITIAL_STATE, action) => {
-  console.log(action);
   switch (action.type) {
     case FETCH_NOTAS: {
       if (!action.payload.exists()) {
@@ -26,6 +26,12 @@ export default (state = INITIAL_STATE, action) => {
         list: { ...state.list, [action.payload.key]: action.payload.val()
         } };
     }
+    case DELETE_NOTA: {
+      const { list } = state;
+      delete list[action.payload];
+      return { ...state, list };
+    }
+
     case INVITE_USER:
       return state;
     default:

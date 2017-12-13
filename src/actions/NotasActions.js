@@ -74,19 +74,16 @@ export const deleteNota = ({ nota }) => {
   const { uid } = nota;
   const { currentUser } = firebase.auth();
   return (dispatch) => {
+    handleDelete(uid, dispatch);
     firebase.database().ref(`/notas/${uid}`).off();
     firebase.database().ref(`/editors/${currentUser.uid}/${uid}`).remove()
     .then(() => {
       _.unset(nota.members, currentUser.uid);
       if (_.isEmpty(nota.members)) {
         firebase.database().ref(`/notas/${uid}`).remove()
-          .then(() => {
-            handleDelete(uid, dispatch);
-          })
           .catch((er) => console.log(er));
       } else {
         firebase.database().ref(`/notas/${uid}/members/${currentUser.uid}`).remove()
-        .then(() => handleDelete(uid, dispatch))
         .catch((err) => console.log(err));
       }
     })
@@ -188,7 +185,7 @@ export const startRecognizing = (recording) => {
 export const recordEnd = () => ({ type: VOICE_END });
 
 const handleDelete = (uid, dispatch) => {
-  dispatch({ type: DELETE_NOTA });
+  dispatch({ type: DELETE_NOTA, payload: uid });
 };
 
 const onSpeechStart = () => {

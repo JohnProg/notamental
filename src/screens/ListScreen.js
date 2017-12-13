@@ -6,7 +6,7 @@ import { List, ListItem, Avatar } from 'react-native-elements';
 import ActionButton from 'react-native-action-button';
 import firebase from 'react-native-firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { fetchNotas, notaChanged, deleteNota, inviteNota, editNota } from '../actions';
+import { fetchNotas, notaChanged, deleteNota, inviteNota, editNota, resetNota } from '../actions';
 import ModalOptions from '../components/ModalOptions';
 
 class ListScreen extends Component {
@@ -52,6 +52,7 @@ class ListScreen extends Component {
           params: { type: 'list', title: nota.title }
       });
     } else {
+      this.props.resetNota();
       this.props.navigation.navigate('MainNavigator', {}, {
           type: 'Navigation/NAVIGATE',
           routeName: 'rec',
@@ -149,7 +150,6 @@ class ListScreen extends Component {
 }
 
 const mapStateToProps = state => {
-  console.log(state.notas);
   const { list, fetching } = state.notas;
   const notas = _.map(list, (val, uid) => {
    return { ...val, uid };
@@ -162,5 +162,6 @@ export default connect(mapStateToProps, {
   notaChanged,
   deleteNota,
   editNota,
-  inviteNota
+  inviteNota,
+  resetNota
 })(ListScreen);

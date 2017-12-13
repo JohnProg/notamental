@@ -19,18 +19,35 @@ const INITIAL_STATE = {
     title: '',
     uid: '',
     timestamp: '',
-    members: ''
+    members: '',
+    position: 0,
+    focused: ''
   },
   error: '',
   recording: false
 };
 
 export default (state = INITIAL_STATE, action) => {
+  console.log(action);
   switch (action.type) {
-    case NOTA_CHANGED:
+    case NOTA_CHANGED: {
       return { ...state, nota: { ...state.nota, [action.payload.prop]: action.payload.value } };
+    }
     case RESET_NOTA:
-      return INITIAL_STATE;
+      return {
+        nota: {
+          text: [{
+            val: '',
+            style: ''
+          }],
+          title: '',
+          uid: '',
+          timestamp: '',
+          members: ''
+        },
+        error: '',
+        recording: false
+      };
     case CREATE_NOTA:
       return INITIAL_STATE;
     case SAVE_NOTA:

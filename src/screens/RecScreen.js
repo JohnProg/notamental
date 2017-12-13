@@ -133,7 +133,7 @@ class RecScreen extends Component {
     const { navigation, nota } = this.props;
     const { title, text, uid } = nota;
     const str = text.map(item => item.val);
-    if (title || str.join()) {
+    if (title || str.join('')) {
       this.props.saveNota({ title, text, navigation, uid });
     } else {
       this.props.deleteNota({ nota });
@@ -202,6 +202,7 @@ class RecScreen extends Component {
             items={this.props.nota.text}
             onFocus={this.props.recording}
             onChangeText={this.props.notaChanged}
+            position={this.props.nota.position}
           />
           <FormValidationMessage>{this.props.error}</FormValidationMessage>
         {this.renderMic()}
@@ -230,7 +231,8 @@ const styles = {
 };
 
 const mapStateToProps = (state) => {
-  const { error, recording, nota } = state.notasRec;
+  const { error, recording, nota} = state.notasRec;
+  console.log(state.notasRec);
   return { error, recording, nota };
 };
 

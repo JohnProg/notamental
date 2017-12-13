@@ -33,29 +33,29 @@ class ListScreen extends Component {
 
   componentWillMount() {
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
+      if (user && !this.props.fetching) {
         this.props.fetchNotas();
       }
     });
   }
 
   editNota = (nota) => {
-    this.handleNavigateRec(nota, { showShare: true });
+    this.handleNavigateRec(nota);
   }
 
-  handleNavigateRec(nota = null, showShare = false) {
+  handleNavigateRec(nota = null) {
     if (nota) {
       this.props.editNota({ nota });
       this.props.navigation.navigate('MainNavigator', {}, {
           type: 'Navigation/NAVIGATE',
           routeName: 'rec',
-          params: { type: 'list', nota, showShare, title: nota.title }
+          params: { type: 'list', title: nota.title }
       });
     } else {
       this.props.navigation.navigate('MainNavigator', {}, {
           type: 'Navigation/NAVIGATE',
           routeName: 'rec',
-          params: { type: 'list', nota, showShare }
+          params: { type: 'list' }
       });
     }
   }
@@ -69,7 +69,7 @@ class ListScreen extends Component {
   hideModal = () => this.setState({ isModalVisible: false })
 
   handleDelete = () => {
-    this.props.deleteNota({ nota: this.state.selectedNota, navigation: this.props.navigation });
+    this.props.deleteNota({ nota: this.state.selectedNota });
     this.hideModal();
   };
 
@@ -88,6 +88,10 @@ class ListScreen extends Component {
   // }
 
   renderSubtitle() {
+    if (text.cosntructor === Array) {
+      const str = text.map(item => item.val);
+      return str.join();
+    } return text;
   }
 
 
@@ -107,7 +111,7 @@ class ListScreen extends Component {
         avatarStyle={{ flex: 1 }}
         key={nota.uid}
         title={nota.title}
-        subtitle={nota.text ? (nota.text.constructor === Array ? nota.text[0].val : nota.text.val) : null}
+        subtitle={nota.text ? (nota.text.constructor === Array ? nota.text.map(item => item.val).join() : nota.text.val) : null}
         rightTitle={
           `${date.getDate()}/${parseInt(date.getMonth() + 1, 10)}/${date.getFullYear()}\n${date.getHours()}:${(date.getMinutes() < 10 ? '0' : '') + date.getMinutes()}`
         }
@@ -145,10 +149,12 @@ class ListScreen extends Component {
 }
 
 const mapStateToProps = state => {
-  const notas = _.map(state.notas, (val, uid) => {
+  console.log(state.notas);
+  const { list, fetching } = state.notas;
+  const notas = _.map(list, (val, uid) => {
    return { ...val, uid };
   });
-  return { notas };
+  return { notas, fetching };
 };
 
 export default connect(mapStateToProps, {

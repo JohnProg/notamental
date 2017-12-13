@@ -6,22 +6,15 @@ import {
   SAVE_NOTA,
   DELETE_NOTA,
   EDIT_NOTA,
-  RESET_NOTA
+  RESET_NOTA,
+  NOTA_INIT
 } from '../actions/types';
 
 const INITIAL_STATE = {
   nota: {
     text: [{
       val: '',
-      style: {
-        flex: 1,
-        paddingTop: 0,
-        paddingRight: 0,
-        paddingBottom: 0,
-        paddingLeft: 0,
-        backgroundColor: '#fff',
-        color: '#424242'
-      }
+      style: ''
     }],
     title: '',
     uid: '',
@@ -42,11 +35,15 @@ export default (state = INITIAL_STATE, action) => {
       return INITIAL_STATE;
     case SAVE_NOTA:
       return INITIAL_STATE;
+    case DELETE_NOTA:
+      return INITIAL_STATE;
     // case DELETE_NOTA:
     //   return INITIAL_STATE;
     case EDIT_NOTA: {
       return { ...state, nota: action.payload };
     }
+    case NOTA_INIT:
+      return { ...state, nota: { ...state.nota, uid: action.payload } };
     case VOICE_START:
       return { ...state, recording: action.payload };
     case VOICE_END:

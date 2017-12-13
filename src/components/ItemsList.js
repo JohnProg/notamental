@@ -24,12 +24,10 @@ class ItemsList extends Component {
     postText: '',
     items: [],
     position: '',
-    inputHeight: 0,
     strikeStyle: ''
   }
 
   componentWillMount() {
-    console.log(this.props.items);
   }
 
   componentDidMount() {
@@ -56,10 +54,11 @@ class ItemsList extends Component {
     this.setState({ items });
   }
 
-  handleSizeChange(event) {
-    this.setState({
-      inputHeight: event.nativeEvent.contentSize.height
-    });
+  handleSizeChange(event, i) {
+    const { items } = this.props;
+    const { height } = event.nativeEvent.contentSize;
+    items[i].style = { height: Math.max(35, height) };
+    this.props.onChangeText({ prop: 'text', value: items });
   }
 
   renderIcon(i) {
@@ -116,15 +115,15 @@ class ItemsList extends Component {
             placeholder={this.renderPlaceholder(i)}
             returnKeyType="next"
             style={[
-              { ...styles.inputStyle }, item.style,
-              { height: Math.max(35, this.state.inputHeight) }]}
+              { ...styles.inputStyle }, item.style]}
             fontSize={18}
             clearButtonMode='always'
             underlineColorAndroid='transparent'
             containerStyle={{ marginLeft: 0 }}
             defaultValue={item.val}
             blurOnSubmit
-            onContentSizeChange={(event) => this.handleSizeChange(event)}
+            onFocus={() => this.props.onChangeText({ prop: 'focused', value: i })}
+            onContentSizeChange={(event) => this.handleSizeChange(event, i)}
             onSelectionChange={(event) => {
               this.setState({ position: event.nativeEvent.selection.start });
             }}
@@ -132,17 +131,16 @@ class ItemsList extends Component {
               const newItems = text;
               if (newItems[i].spaceOffset) {
                 newItems[i] = {
+                  ...newItems[i],
                   val: value.trim(),
                   spaceOffset: false
                 };
               } else {
-                newItems[i] = { val: value };
+                newItems[i].val = value;
               }
               if (!value && (i !== 0)) {
                 newItems.splice(i, 1);
                 this.refs[i - 1].focus();
-                // console.log(this.refs[i - 1]);
-                // this.setState({ position: text[i - 1].val.length - 1 });
               }
               this.props.onChangeText({ prop: 'text', value: newItems });
             }}

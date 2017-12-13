@@ -4,7 +4,10 @@ import {
   INVITE_USER
 } from '../actions/types';
 
-const INITIAL_STATE = null;
+const INITIAL_STATE = {
+  list: null,
+  fetching: ''
+};
 
 export default (state = INITIAL_STATE, action) => {
   console.log(action);
@@ -13,11 +16,15 @@ export default (state = INITIAL_STATE, action) => {
       if (!action.payload.exists()) {
         _.unset(state, action.payload.key);
         if (_.isEmpty(state)) {
-          return INITIAL_STATE;
+          return { ...INITIAL_STATE, fetching: true };
         }
-        return state;
+        return { ...state, fetching: true };
       }
-      return { ...state, [action.payload.key]: action.payload.val() };
+      return {
+        ...state,
+        fetching: true,
+        list: { ...state.list, [action.payload.key]: action.payload.val()
+        } };
     }
     case INVITE_USER:
       return state;

@@ -10,7 +10,7 @@ import {
   INVITE_NOTA,
   VOICE_START,
   VOICE_END,
-  VOICE_INIT,
+  NOTA_INIT,
   RESET_NOTA,
   EDIT_NOTA
 } from './types';
@@ -38,51 +38,59 @@ export const editNota = ({ nota }) => ({
 
 
 export const saveNota = ({ title, text, navigation, uid }) => {
-  const { currentUser } = firebase.auth();
+  // const { currentUser } = firebase.auth();
   return (dispatch) => {
-    if (uid) {
-      firebase.database().ref(`/notas/${uid}`).set({
+    // if (uid) {
+    console.log('SaveUID: ', uid);
+      firebase.database().ref(`/notas/${uid}`).update({
         title,
         text,
         timestamp: new Date(),
-      }).then(() => {
+      })
+      .then(() => {
           dispatch({ type: SAVE_NOTA });
-          navigation.goBack();
-      });
-    } else {
-      const ref = firebase.database().ref('/notas').push();
-      const userMember = { [currentUser.uid]: true };
-      ref.set({
-        title,
-        text,
-        timestamp: new Date(),
-        ownerId: currentUser.uid,
-        members: userMember
-      });
-          const join = firebase.database().ref(`/editors/${currentUser.uid}`);
-          const notaKey = { [ref.key]: true };
-          join.update(notaKey);
-            dispatch({ type: CREATE_NOTA });
-            navigation.goBack();
-    }
+      })
+      .catch((err) => console.log('SavingErr: ', err));
+    // } else {
+    //   const ref = firebase.database().ref('/notas').push();
+    //   const userMember = { [currentUser.uid]: true };
+    //   ref.set({
+    //     title,
+    //     text,
+    //     timestamp: new Date(),
+    //     ownerId: currentUser.uid,
+    //     members: userMember
+    //   });
+    //       const join = firebase.database().ref(`/editors/${currentUser.uid}`);
+    //       const notaKey = { [ref.key]: true };
+    //       join.update(notaKey);
+    //         dispatch({ type: CREATE_NOTA });
+    //         // navigation.goBack();
+    // }
   };
 };
 
-export const deleteNota = ({ nota, navigation }) => {
+export const deleteNota = ({ nota }) => {
   const { uid } = nota;
   const { currentUser } = firebase.auth();
   return (dispatch) => {
-    firebase.database().ref(`/editors/${currentUser.uid}/${uid}`).remove();
-    _.unset(nota.members, currentUser.uid);
-    if (_.isEmpty(nota.members)) {
-      firebase.database().ref(`/notas/${uid}`).remove()
-        .then(() => {
-          handleDelete(uid, dispatch, navigation);
-        });
-    } else {
-      firebase.database().ref(`/notas/${uid}/members/${currentUser.uid}`).remove();
-        handleDelete(uid, dispatch, navigation);
-    }
+    firebase.database().ref(`/notas/${uid}`).off();
+    firebase.database().ref(`/editors/${currentUser.uid}/${uid}`).remove()
+    .then(() => {
+      _.unset(nota.members, currentUser.uid);
+      if (_.isEmpty(nota.members)) {
+        firebase.database().ref(`/notas/${uid}`).remove()
+          .then(() => {
+            handleDelete(uid, dispatch);
+          })
+          .catch((er) => console.log(er));
+      } else {
+        firebase.database().ref(`/notas/${uid}/members/${currentUser.uid}`).remove()
+        .then(() => handleDelete(uid, dispatch))
+        .catch((err) => console.log(err));
+      }
+    })
+    .catch((err) => console.log(err));
   };
 };
 
@@ -92,6 +100,7 @@ export const fetchNotas = () => {
      const ref = firebase.database().ref(`/editors/${currentUser.uid}`);
      ref.on('value', snapshot => {
         const memberOf = snapshot.val();
+        console.log(snapshot.val());
         _.map(memberOf, (val, index) => {
           const refData = firebase.database().ref(`/notas/${index}`);
           refData.on('value', snapshotData => {
@@ -128,7 +137,8 @@ export const inviteNota = ({ email, uid }) => {
   };
 };
 
-export const initRec = (onResults, onEnding) => {
+export const initNota = (onResults, onEnding, nota) => {
+  let { uid } = nota;
   return (dispatch) => {
     Voice.onSpeechStart = onSpeechStart.bind(this);
     // Voice.onSpeechRecognized = this.onSpeechRecognized.bind(this);
@@ -137,7 +147,23 @@ export const initRec = (onResults, onEnding) => {
     // Voice.onSpeechResults = this.onSpeechResults.bind(this);
     Voice.onSpeechPartialResults = onResults.bind(this);
     // Voice.onSpeechVolumeChanged = this.onSpeechVolumeChanged.bind(this);
-    dispatch({ type: VOICE_INIT });
+    if (!uid) {
+      const { currentUser } = firebase.auth();
+      const ref = firebase.database().ref('/notas').push();
+      const userMember = { [currentUser.uid]: true };
+      ref.set({
+        title: '',
+        text: '',
+        timestamp: new Date(),
+        ownerId: currentUser.uid,
+        members: userMember
+      });
+          const join = firebase.database().ref(`/editors/${currentUser.uid}`);
+          const notaKey = { [ref.key]: true };
+          join.update(notaKey);
+          uid = ref.key;
+    }
+    dispatch({ type: NOTA_INIT, payload: uid });
   };
 };
 
@@ -161,12 +187,8 @@ export const startRecognizing = (recording) => {
 
 export const recordEnd = () => ({ type: VOICE_END });
 
-const handleDelete = (uid, dispatch, navigation) => {
+const handleDelete = (uid, dispatch) => {
   dispatch({ type: DELETE_NOTA });
-  firebase.database().ref(`/notas/${uid}`).off();
-  if (navigation.state.routeName === 'rec') {
-    navigation.goBack();
-  }
 };
 
 const onSpeechStart = () => {

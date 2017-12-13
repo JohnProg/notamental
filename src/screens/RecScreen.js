@@ -13,7 +13,7 @@ import {
   saveNota,
   deleteNota,
   inviteNota,
-  initRec,
+  initNota,
   startRecognizing,
   recordEnd
 } from '../actions';
@@ -40,7 +40,7 @@ class RecScreen extends Component {
       <TextInput
         style={{ width: 190, height: 50, fontSize: 20, fontWeight: 'bold' }}
         placeholder='Titulo Nota'
-        value={navigation.state.params.nota ? navigation.state.params.title : null}
+        value={navigation.state.params.title ? navigation.state.params.title : null}
         onChangeText={value => {
           navigation.state.params.notaChanged({ prop: 'title', value });
           navigation.setParams({ title: value });
@@ -49,7 +49,6 @@ class RecScreen extends Component {
     ),
     headerRight: (
       <View style={{ flexDirection: 'row' }}>
-        {navigation.state.params.showShare ?
         <Icon
         title="Compartir"
         size={30}
@@ -59,7 +58,7 @@ class RecScreen extends Component {
         type='entypo'
         name='share'
         containerStyle={{ marginRight: 10 }}
-        /> : null }
+        />
         <Icon
           title="Borrar"
           size={30}
@@ -89,16 +88,15 @@ class RecScreen extends Component {
 
   state = {
     isShareModalVisible: false,
-    isFocused: 0
   }
 
   componentWillMount() {
-    this.props.initRec(this.onResults, this.onEnding);
-    this.props.navigation.setParams({ showShare: false });
+    this.props.initNota(this.onResults, this.onEnding, this.props.nota);
   }
 
   componentDidMount() {
     this.props.navigation.setParams({
+     title: this.props.nota.title,
      sharePress: this.sharePress.bind(this),
      deletePress: this.deletePress.bind(this),
      savePress: this.savePress.bind(this),
@@ -113,7 +111,7 @@ class RecScreen extends Component {
 
   onResults = (e) => {
     const value = e.value.pop();
-    let newItems = this.props.text;
+    let newItems = this.props.nota.text;
     let { recording } = this.props;
     if (this.props.navigation.state.params.type === 'list') {
       if (!(recording + 1)) {
@@ -132,15 +130,20 @@ class RecScreen extends Component {
   }
 
   savePress = () => {
-    const { title, text, navigation, uid } = this.props;
+    const { navigation, nota } = this.props;
+    const { title, text, uid } = nota;
     const str = text.map(item => item.val);
-    console.log('uid', uid);
-    if (title || str.join()) this.props.saveNota({ title, text, navigation, uid });
+    if (title || str.join()) {
+      this.props.saveNota({ title, text, navigation, uid });
+    } else {
+      this.props.deleteNota({ nota });
+    }
   }
 
   deletePress = () => {
     const { nota, navigation } = this.props;
-    this.props.deleteNota({ nota, navigation });
+    this.props.deleteNota({ nota });
+    navigation.goBack();
   };
 
   sharePress = () => {
@@ -148,7 +151,8 @@ class RecScreen extends Component {
   };
 
   inviteNota({ email }) {
-    this.props.inviteNota({ email, uid: this.props.uid });
+    const { uid } = this.props.nota;
+    this.props.inviteNota({ email, uid });
   }
 
   handleBackdropPress() {
@@ -157,15 +161,17 @@ class RecScreen extends Component {
 
 
   recPress = () => {
+    const { text } = this.props.nota;
     let recording = true;
-    if (this.props.text.constructor === Array) {
-      recording = this.props.text.length - 1;
+    if (text.constructor === Array) {
+      recording = text.length - 1;
     }
     this.props.startRecognizing(recording);
   }
 
   nextItem = () => {
-    this.setState({ isFocused: this.state.isFocused + 1 });
+    const { text } = this.props.nota;
+    this.props.notaChanged({ prop: 'text', value: text.push[''] });
   }
 
   renderMic = () => {
@@ -193,7 +199,7 @@ class RecScreen extends Component {
     return (
       <View style={{ flex: 1 }} >
           <ItemsList
-            items={this.props.text}
+            items={this.props.nota.text}
             onFocus={this.props.recording}
             onChangeText={this.props.notaChanged}
           />
@@ -224,34 +230,17 @@ const styles = {
 };
 
 const mapStateToProps = (state) => {
-  const { title, text, uid } = state.notasRec.nota;
   const { error, recording, nota } = state.notasRec;
-  return { title, text, error, uid, recording, nota };
+  return { error, recording, nota };
 };
 
 export default connect(mapStateToProps, {
   resetNota,
   notaChanged,
   saveNota,
-  initRec,
+  initNota,
   inviteNota,
   startRecognizing,
   recordEnd,
   deleteNota
 })(RecScreen);
-
-// <FormInput
-//   inputStyle={{ fontSize: 18 }}
-//   placeholder='Titulo'
-//   value={this.props.title}
-//   onChangeText={value => this.props.notaChanged({ prop: 'title', value })}
-// />
-// <FormInput
-//   placeholder='Escribe tu nota aquí'
-//   inputStyle={{ fontSize: 18 }}
-//   numberOfLines={8}
-//   textAlignVertical={'top'}
-//   multiline
-//   value={this.props.text}
-//   onChangeText={value => this.props.notaChanged({ prop: 'text', value })}
-// />

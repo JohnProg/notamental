@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import Modal from 'react-native-modal';
-import { Button, FormInput } from 'react-native-elements';
+import { Button, FormInput, Card } from 'react-native-elements';
 
 class ModalOptions extends Component {
   state = {
@@ -51,7 +51,7 @@ class ModalOptions extends Component {
         animationIn={'zoomInDown'}
         animationOut={'zoomOutUp'}
       >
-        <View style={styles.modalContent} >
+        <Card containerStyle={styles.modalContent}>
           <Text>
             Testing
           </Text>
@@ -66,7 +66,7 @@ class ModalOptions extends Component {
             action: this.props.inviteNota
           })) : null}
           {this.props.sendInvite ? this.renderInvitation() : null }
-        </View>
+        </Card>
       </Modal>
     );
   }
@@ -88,12 +88,12 @@ const styles = {
     borderColor: 'rgba(0, 0, 0, 0.1)',
   },
   modalContent: {
-    backgroundColor: 'white',
-    padding: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // backgroundColor: 'white',
+    // padding: 22,
+    // justifyContent: 'center',
+    // alignItems: 'center',
     borderRadius: 4,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    // borderColor: 'rgba(0, 0, 0, 0.1)',
   },
   bottomModal: {
     justifyContent: 'flex-end',

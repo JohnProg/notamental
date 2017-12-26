@@ -9,6 +9,9 @@ import { propChanged, loginUser, userLogged, googleLogin } from '../actions';
 import { Spinner } from '../components/common';
 
 class LoginScreen extends Component {
+  static navigationOptions = () => ({
+    title: 'Acceder'
+  });
   componentWillMount = () => {
     const { navigation } = this.props;
     firebase.auth().onAuthStateChanged(user => {
@@ -48,7 +51,7 @@ class LoginScreen extends Component {
           backgroundColor="#03A9F4"
           icon={{ name: 'check' }}
           onPress={this.loginPress.bind(this)}
-        />
+        />{}
         <Button
           title='Registrarse'
           buttonStyle={{ marginTop: 20 }}
@@ -71,16 +74,16 @@ class LoginScreen extends Component {
     return (
       <View style={{ paddingVertical: 20 }}>
         <Card>
-          <FormLabel>Name</FormLabel>
+          <FormLabel>Usuario</FormLabel>
           <FormInput
             placeholder="usuario@dominio.com"
             value={this.props.email}
             onChangeText={value => this.onPropChange({ prop: 'email', value })}
           />
-          <FormLabel>Password</FormLabel>
+          <FormLabel>Contraseña</FormLabel>
           <FormInput
             secureTextEntry
-            placeholder="Password"
+            placeholder="Contraseña"
             value={this.props.password}
             onChangeText={value => this.onPropChange({ prop: 'password', value })}
           />

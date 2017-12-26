@@ -68,6 +68,7 @@ class Slides extends Component {
     if (this.state.visibleSwiper) {
       return (
         <Swiper
+          loop={false}
           style={styles.wrapper}
           showsButtons
           removeClippedSubviews={false}

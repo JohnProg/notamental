@@ -39,15 +39,15 @@ class RegisterScreen extends Component {
             value={this.props.email}
             onChangeText={value => this.onPropChange({ prop: 'email', value })}
           />
-          <FormLabel>Password</FormLabel>
+          <FormLabel>Contraseña</FormLabel>
           <FormInput
-            placeholder="Password"
+            placeholder="Contraseña..."
             value={this.props.password}
             onChangeText={value => this.onPropChange({ prop: 'password', value })}
           />
-          <FormLabel>Confirm Password</FormLabel>
+          <FormLabel>Repite Contraseña</FormLabel>
           <FormInput
-            placeholder="Email address..."
+            placeholder="Repite Contraseña..."
             value={this.props.cPassword}
             onChangeText={value => this.onPropChange({ prop: 'cPassword', value })}
           />

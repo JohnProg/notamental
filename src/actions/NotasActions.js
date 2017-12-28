@@ -164,18 +164,16 @@ export const initNota = (onResults, onEnding, nota) => {
   };
 };
 
-export const startRecognizing = (recording) => {
+export const startRecognizing = () => {
   return (dispatch) => {
     Voice.start('es-ES')
       .then(() => {
         dispatch({
           type: VOICE_START,
-          payload: recording
         });
       }).catch((e) => {
         dispatch({
-          type: VOICE_START,
-          payload: false
+          type: VOICE_START
         });
         notaChanged({ prop: 'error', value: e.error.message });
       });

@@ -21,7 +21,7 @@ const INITIAL_STATE = {
     timestamp: '',
     members: '',
     position: 0,
-    focused: ''
+    focused: false
   },
   error: '',
   recording: false
@@ -43,7 +43,8 @@ export default (state = INITIAL_STATE, action) => {
           title: '',
           uid: '',
           timestamp: '',
-          members: ''
+          members: '',
+          focused: false
         },
         error: '',
         recording: false
@@ -62,7 +63,7 @@ export default (state = INITIAL_STATE, action) => {
     case NOTA_INIT:
       return { ...state, nota: { ...state.nota, uid: action.payload } };
     case VOICE_START:
-      return { ...state, recording: action.payload };
+      return { ...state, recording: true };
     case VOICE_END:
       return { ...state, recording: false };
     default:

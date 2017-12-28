@@ -1,21 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, ScrollView } from 'react-native';
-import { List, ListItem, FormInput, Icon, Card } from 'react-native-elements';
+import { View, TextInput, ScrollView } from 'react-native';
+import { Icon, Card } from 'react-native-elements';
 import { DotsLoader } from 'react-native-indicator';
 import Swipeable from 'react-native-swipeable';
-
-const INITIAL_STATE = {
-  val: '',
-  style: {
-    flex: 1,
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
-    backgroundColor: '#fff',
-    color: '#424242'
-  }
-};
 
 class ItemsList extends Component {
   state = {

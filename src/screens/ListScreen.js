@@ -95,11 +95,16 @@ class ListScreen extends Component {
   //   } return nota.text;
   // }
 
-  renderSubtitle() {
-    if (text.cosntructor === Array) {
-      const str = text.map(item => item.val);
-      return str.join();
-    } return text;
+  renderSubtitle(nota) {
+    if (nota.text) {
+      if (nota.text.constructor === Array) return nota.text.map(item => item.val).join();
+      return nota.text.val;
+    } return null;
+  }
+
+  renderRightTitle(date) {
+    return `${date.getDate()}/${parseInt(date.getMonth() + 1, 10)}/${date.getFullYear()}
+    ${date.getHours()}:${(date.getMinutes() < 10 ? '0' : '') + date.getMinutes()}`;
   }
 
 
@@ -119,10 +124,8 @@ class ListScreen extends Component {
         avatarStyle={{ flex: 1 }}
         key={nota.uid}
         title={nota.title}
-        subtitle={nota.text ? (nota.text.constructor === Array ? nota.text.map(item => item.val).join() : nota.text.val) : null}
-        rightTitle={
-          `${date.getDate()}/${parseInt(date.getMonth() + 1, 10)}/${date.getFullYear()}\n${date.getHours()}:${(date.getMinutes() < 10 ? '0' : '') + date.getMinutes()}`
-        }
+        subtitle={this.renderSubtitle(nota)}
+        rightTitle={this.renderRightTitle(date)}
         rightTitleNumberOfLines={2}
         onPress={() => this.editNota(nota)}
         onLongPress={() => this.showModal(nota)}

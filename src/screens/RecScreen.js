@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, TextInput } from 'react-native';
-import _ from 'lodash';
-import { FormInput, FormValidationMessage, Icon } from 'react-native-elements';
+import { FormValidationMessage, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 import ActionButton from 'react-native-action-button';
 import ModalOptions from '../components/ModalOptions';
@@ -88,6 +87,7 @@ class RecScreen extends Component {
 
   state = {
     isShareModalVisible: false,
+    pos: 0
   }
 
   componentWillMount() {
@@ -111,18 +111,9 @@ class RecScreen extends Component {
 
   onResults = (e) => {
     const value = e.value.pop();
-    let newItems = this.props.nota.text;
-    let { recording } = this.props;
-    if (this.props.navigation.state.params.type === 'list') {
-      if (!(recording + 1)) {
-        this.props.notaChanged({ prop: 'recording', value: 0 });
-        recording = 0;
-      }
-      newItems[this.props.recording] = { val: value };
-    } else {
-      newItems = { val: value };
-    }
-    this.props.notaChanged({ prop: 'text', value: newItems });
+    const { text } = this.props.nota;
+    text[this.state.pos] = { val: value };
+    this.props.notaChanged({ prop: 'text', value: text });
   }
 
   onEnding = () => {
@@ -161,12 +152,13 @@ class RecScreen extends Component {
 
 
   recPress = () => {
-    const { text } = this.props.nota;
-    let recording = true;
-    if (text.constructor === Array) {
-      recording = text.length - 1;
+    const { text, focused } = this.props.nota;
+    if (!focused) {
+      this.setState({ pos: !text.map(item => item.val).join('') ? 0 : text.length - 1 });
+    } else {
+      this.setState({ pos: focused });
     }
-    this.props.startRecognizing(recording);
+    this.props.startRecognizing();
   }
 
   nextItem = () => {
@@ -200,7 +192,7 @@ class RecScreen extends Component {
       <View style={{ flex: 1 }} >
           <ItemsList
             items={this.props.nota.text}
-            onFocus={this.props.recording}
+            onFocus={this.props.recording ? this.state.pos : false}
             onChangeText={this.props.notaChanged}
             position={this.props.nota.position}
           />
@@ -216,22 +208,8 @@ class RecScreen extends Component {
   }
 }
 
-const styles = {
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  iconStyle: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20
-  }
-};
-
 const mapStateToProps = (state) => {
-  const { error, recording, nota} = state.notasRec;
+  const { error, recording, nota } = state.notasRec;
   console.log(state.notasRec);
   return { error, recording, nota };
 };

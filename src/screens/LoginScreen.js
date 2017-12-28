@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { connect } from 'react-redux';
 import { Card, FormLabel, FormInput, FormValidationMessage, Button } from 'react-native-elements';
 import firebase from 'react-native-firebase';
-import { GoogleSigninButton } from 'react-native-google-signin';
+import SplashScreen from 'react-native-splash-screen';
 
 import { propChanged, loginUser, userLogged, googleLogin } from '../actions';
 import { Spinner } from '../components/common';
@@ -20,6 +20,12 @@ class LoginScreen extends Component {
         navigation.navigate('main');
       }
     });
+  }
+
+  componentDidMount() {
+  // do stuff while splash screen is shown
+    // After having done stuff (such as async tasks) hide the splash screen
+    SplashScreen.hide();
   }
 
   onPropChange({ prop, value }) {

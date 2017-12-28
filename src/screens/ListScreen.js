@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { List, ListItem, Avatar } from 'react-native-elements';
 import ActionButton from 'react-native-action-button';
 import firebase from 'react-native-firebase';
+import SplashScreen from 'react-native-splash-screen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { fetchNotas, notaChanged, deleteNota, inviteNota, editNota, resetNota } from '../actions';
 import ModalOptions from '../components/ModalOptions';
@@ -37,6 +38,12 @@ class ListScreen extends Component {
         this.props.fetchNotas();
       }
     });
+  }
+
+  componentDidMount() {
+  // do stuff while splash screen is shown
+    // After having done stuff (such as async tasks) hide the splash screen
+    SplashScreen.hide();
   }
 
   editNota = (nota) => {

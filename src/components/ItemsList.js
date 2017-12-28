@@ -99,9 +99,8 @@ class ItemsList extends Component {
 
   renderList(text) {
     if (text[text.length - 1].val !== '' || text.length === 1) {
-      text.push(INITIAL_STATE);
+      text.push({ val: '' });
     }
-    if (0) console.log('weke');
     return text.map((item, i) => (
       <Swipeable
         key={i}

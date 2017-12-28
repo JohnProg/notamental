@@ -154,6 +154,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-splash-screen')
     compile(project(":react-native-google-signin")){
       exclude group: "com.google.android.gms" // very important
     }

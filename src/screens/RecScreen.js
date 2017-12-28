@@ -17,19 +17,6 @@ import {
   recordEnd
 } from '../actions';
 
-const INITIAL_STATE = {
-  val: '',
-  style: {
-    flex: 1,
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
-    backgroundColor: '#fff',
-    color: '#424242'
-  }
-};
-
 class RecScreen extends Component {
 
   static navigationOptions = ({ navigation }) => (

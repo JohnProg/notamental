@@ -3,7 +3,6 @@ import Voice from 'react-native-voice';
 import _ from 'lodash';
 import {
   NOTA_CHANGED,
-  CREATE_NOTA,
   SAVE_NOTA,
   DELETE_NOTA,
   FETCH_NOTAS,
@@ -37,10 +36,8 @@ export const editNota = ({ nota }) => ({
 });
 
 
-export const saveNota = ({ title, text, navigation, uid }) => {
-  // const { currentUser } = firebase.auth();
+export const saveNota = ({ title, text, uid }) => {
   return (dispatch) => {
-    // if (uid) {
     console.log('SaveUID: ', uid);
       firebase.database().ref(`/notas/${uid}`).update({
         title,
@@ -51,22 +48,6 @@ export const saveNota = ({ title, text, navigation, uid }) => {
           dispatch({ type: SAVE_NOTA });
       })
       .catch((err) => console.log('SavingErr: ', err));
-    // } else {
-    //   const ref = firebase.database().ref('/notas').push();
-    //   const userMember = { [currentUser.uid]: true };
-    //   ref.set({
-    //     title,
-    //     text,
-    //     timestamp: new Date(),
-    //     ownerId: currentUser.uid,
-    //     members: userMember
-    //   });
-    //       const join = firebase.database().ref(`/editors/${currentUser.uid}`);
-    //       const notaKey = { [ref.key]: true };
-    //       join.update(notaKey);
-    //         dispatch({ type: CREATE_NOTA });
-    //         // navigation.goBack();
-    // }
   };
 };
 
@@ -120,9 +101,11 @@ export const inviteNota = ({ email, uid }) => {
      const ref = firebase.database().ref('users');
      ref.orderByChild('email').startAt(email).endAt(email)
       .on('value', snap => {
+        console.log('step1: ', snap.val());
        _.map(snap.val(), (value, index) => {
          firebase.database().ref(`editors/${index}`).update(notaKey)
           .then(() => {
+            console.log('step2 ');
             const userMember = { [index]: true };
             firebase.database().ref(`notas/${uid}/members`).update(userMember)
               .then(() => {

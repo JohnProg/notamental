@@ -76,21 +76,8 @@ export const fetchNotas = () => {
    const { currentUser } = firebase.auth();
    return (dispatch) => {
      const ref = firebase.database().ref(`/editors/${currentUser.uid}`);
-     ref.on('value', snapshot => {
-        const memberOf = snapshot.val();
-        console.log(snapshot.val());
-        _.map(memberOf, (val, index) => {
-          const refData = firebase.database().ref(`/notas/${index}`);
-          refData.on('value', snapshotData => {
-            if (!snapshotData.exists()) {
-              refData.off();
-            }
-              dispatch({
-                type: FETCH_NOTAS,
-                payload: snapshotData
-              });
-          });
-        });
+     ref.on('child_added', notaId => {
+       handleFetch(notaId.key, dispatch);
     });
   };
 };
@@ -165,6 +152,20 @@ export const startRecognizing = () => {
 
 export const recordEnd = () => ({ type: VOICE_END });
 
+
+const handleFetch = (key, dispatch) => {
+  const refData = firebase.database().ref(`/notas/${key}`);
+  refData.on('value', snapshotData => {
+    if (!snapshotData.exists()) {
+      refData.off();
+    }
+    dispatch({
+      type: FETCH_NOTAS,
+      payload: snapshotData
+    });
+  });
+};
+
 const handleDelete = (uid, dispatch) => {
   dispatch({ type: DELETE_NOTA, payload: uid });
 };
@@ -176,13 +177,3 @@ const onSpeechStart = () => {
 const onSpeechError = (e) => {
   notaChanged({ prop: 'error', value: e.error.message });
 };
-
-// const onSpeechPartialResults = (e) => {
-//   return (dispatch) => {
-//       dispatch({
-//         type: NOTA_CHANGED,
-//         payload: { prop: 'text', value: e.value }
-//       });
-//     };
-//   // return e.value.map(value => this.notaChanged({ prop: 'text', value }));
-// };

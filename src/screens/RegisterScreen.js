@@ -6,6 +6,9 @@ import { Spinner } from '../components/common';
 import { propChanged, signUp } from '../actions';
 
 class RegisterScreen extends Component {
+  static navigationOptions = () => ({
+    title: 'Registro'
+  });
   onPropChange({ prop, value }) {
     this.props.propChanged({ prop, value });
   }
@@ -41,12 +44,14 @@ class RegisterScreen extends Component {
           />
           <FormLabel>Contraseña</FormLabel>
           <FormInput
+            secureTextEntry
             placeholder="Contraseña..."
             value={this.props.password}
             onChangeText={value => this.onPropChange({ prop: 'password', value })}
           />
           <FormLabel>Repite Contraseña</FormLabel>
           <FormInput
+            secureTextEntry
             placeholder="Repite Contraseña..."
             value={this.props.cPassword}
             onChangeText={value => this.onPropChange({ prop: 'cPassword', value })}

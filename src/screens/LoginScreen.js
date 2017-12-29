@@ -57,7 +57,7 @@ class LoginScreen extends Component {
           backgroundColor="#03A9F4"
           icon={{ name: 'check' }}
           onPress={this.loginPress.bind(this)}
-        />{}
+        />
         <Button
           title='Registrarse'
           buttonStyle={{ marginTop: 20 }}

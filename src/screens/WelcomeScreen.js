@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Slides from '../components/Slides';
 
 const SLIDE_DATA = [
-  { text: 'Bienvenida/o a\nNota Mental', color: '#03A9F4' },
+  { text: 'Bienvenida/o a\nNota Mental', color: '#e4e574' },
   { text: 'Puedes guardar aquí tus notas de voz', color: '#009688' },
   { text: 'Y ese audio se convertirá en texto!', color: '#03A9F4' }
 ];

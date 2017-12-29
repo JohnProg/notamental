@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, TextInput } from 'react-native';
+import { View, TextInput, Picker } from 'react-native';
 import { FormValidationMessage, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 import ActionButton from 'react-native-action-button';
 import ModalOptions from '../components/ModalOptions';
 import ItemsList from '../components/ItemsList';
+import ModalSelector from 'react-native-modal-selector';
 
 import {
   resetNota,
@@ -172,6 +173,13 @@ class RecScreen extends Component {
         onPress={this.recPress.bind(this)}
       />
     );
+  }
+
+  renderSelector() {
+    return (<ModalSelector
+                    data={data}
+                    initValue="Select something yummy!"
+                    onChange={(option)=>{ alert(`${option.label} (${option.key}) nom nom nom`) }} />);
   }
 
   render() {

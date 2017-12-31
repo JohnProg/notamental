@@ -36,37 +36,37 @@ export const editNota = ({ nota }) => ({
 });
 
 
-export const saveNota = ({ title, text, uid }) => {
+export const saveNota = ({ title, text, uid, members, category }) => {
   return (dispatch) => {
-    console.log('SaveUID: ', uid);
       firebase.database().ref(`/notas/${uid}`).update({
         title,
         text,
+        category,
+        members,
         timestamp: new Date(),
       })
       .then(() => {
-          dispatch({ type: SAVE_NOTA });
+          dispatch({ type: SAVE_NOTA, payload: '' });
       })
-      .catch((err) => console.log('SavingErr: ', err));
+      .catch((err) => dispatch({ type: SAVE_NOTA, payload: err.message }));
   };
 };
 
-export const deleteNota = ({ nota }) => {
-  const { uid } = nota;
+export const deleteNota = ({ uid, members }) => {
   const { currentUser } = firebase.auth();
   return (dispatch) => {
     handleDelete(uid, dispatch);
     firebase.database().ref(`/notas/${uid}`).off();
     firebase.database().ref(`/editors/${currentUser.uid}/${uid}`).remove()
     .then(() => {
-      _.unset(nota.members, currentUser.uid);
-      if (_.isEmpty(nota.members)) {
-        firebase.database().ref(`/notas/${uid}`).remove()
-          .catch((er) => console.log(er));
-      } else {
-        firebase.database().ref(`/notas/${uid}/members/${currentUser.uid}`).remove()
-        .catch((err) => console.log(err));
-      }
+      _.unset(members, currentUser.uid);
+      if (_.isEmpty(members)) {
+         firebase.database().ref(`/notas/${uid}`).remove()
+           .catch((er) => console.log(er));
+       } else {
+         firebase.database().ref(`/notas/${uid}/members/${currentUser.uid}`).remove()
+         .catch((err) => console.log(err));
+       }
     })
     .catch((err) => console.log(err));
   };
@@ -87,19 +87,17 @@ export const inviteNota = ({ email, uid }) => {
   return (dispatch) => {
      const ref = firebase.database().ref('users');
      ref.orderByChild('email').startAt(email).endAt(email)
-      .on('value', snap => {
-        console.log('step1: ', snap.val());
-       _.map(snap.val(), (value, index) => {
-         firebase.database().ref(`editors/${index}`).update(notaKey)
+      .once('value', snap => {
+       const userId = _.map(snap.val(), (value, index) => index);
+       firebase.database().ref(`editors/${userId}`).update(notaKey)
           .then(() => {
-            console.log('step2 ');
-            const userMember = { [index]: true };
-            firebase.database().ref(`notas/${uid}/members`).update(userMember)
+            firebase.database().ref(`notas/${uid}/members`).update({ [userId]: email })
               .then(() => {
-                dispatch({ type: INVITE_NOTA });
-              });
-          });
-       });
+                dispatch({ type: INVITE_NOTA, payload: '' });
+              })
+              .catch((e) => dispatch({ type: INVITE_NOTA, payload: e.message }));
+          })
+          .catch((e) => dispatch({ type: INVITE_NOTA, payload: e.message }));
      });
   };
 };
@@ -114,23 +112,26 @@ export const initNota = (onResults, onEnding, nota) => {
     // Voice.onSpeechResults = this.onSpeechResults.bind(this);
     Voice.onSpeechPartialResults = onResults.bind(this);
     // Voice.onSpeechVolumeChanged = this.onSpeechVolumeChanged.bind(this);
+    let newNota = nota;
     if (!uid) {
       const { currentUser } = firebase.auth();
       const ref = firebase.database().ref('/notas').push();
-      const userMember = { [currentUser.uid]: true };
-      ref.set({
+      newNota = {
         title: '',
-        text: '',
+        text: [{ val: '' }],
         timestamp: new Date(),
         ownerId: currentUser.uid,
-        members: userMember
-      });
+        category: { key: 'archive', label: 'Varios' },
+        members: { [currentUser.uid]: currentUser.email },
+        uid: ref.key
+      };
+      ref.set(newNota);
           const join = firebase.database().ref(`/editors/${currentUser.uid}`);
           const notaKey = { [ref.key]: true };
           join.update(notaKey);
           uid = ref.key;
     }
-    dispatch({ type: NOTA_INIT, payload: uid });
+    dispatch({ type: NOTA_INIT, payload: newNota });
   };
 };
 

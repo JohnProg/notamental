@@ -31,9 +31,6 @@ export default (state = INITIAL_STATE, action) => {
       delete list[action.payload];
       return { ...state, list };
     }
-
-    case INVITE_USER:
-      return state;
     default:
       return state;
   }

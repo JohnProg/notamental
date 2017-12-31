@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import { View, TextInput, Picker } from 'react-native';
+import { View, TextInput } from 'react-native';
 import { FormValidationMessage, Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 import ActionButton from 'react-native-action-button';
-import ModalOptions from '../components/ModalOptions';
+import ModalShare from '../components/ModalShare';
+import ModalCategories from '../components/ModalCategories';
 import ItemsList from '../components/ItemsList';
-import ModalSelector from 'react-native-modal-selector';
+import { NOTA_CATEGORY } from '../utils/categories';
+
 
 import {
   resetNota,
@@ -37,44 +39,45 @@ class RecScreen extends Component {
     headerRight: (
       <View style={{ flexDirection: 'row' }}>
         <Icon
-        title="Compartir"
-        size={30}
-        onPress={() => navigation.state.params.sharePress()}
-        backgroundColor="rgba(0,0,0,0)"
-        color="rgba(0,122,255,1)"
-        type='entypo'
-        name='share'
-        containerStyle={{ marginRight: 10 }}
+          title="Categorias"
+          size={30}
+          onPress={() => navigation.state.params.categoriesPress()}
+          backgroundColor="rgba(0,0,0,0)"
+          color="#000000"
+          type='entypo'
+          name={navigation.state.params.category ? navigation.state.params.category : 'archive'}
+          containerStyle={{ marginRight: 10 }}
+        />
+        <Icon
+          title="Compartir"
+          size={30}
+          onPress={() => navigation.state.params.sharePress()}
+          backgroundColor="rgba(0,0,0,0)"
+          color="#000000"
+          type='entypo'
+          name='share'
+          containerStyle={{ marginRight: 10 }}
         />
         <Icon
           title="Borrar"
           size={30}
           onPress={() => navigation.state.params.deletePress()}
           backgroundColor="rgba(0,0,0,0)"
-          color="rgba(0,122,255,1)"
+          color="#000000"
           type='entypo'
           name='trash'
-          containerStyle={{ marginRight: 10 }}
+          containerStyle={{ marginRight: 5 }}
         />
       </View>
     ),
     headerStyle: {
-      paddingRight: 10
+      paddingRight: 5
     }
   })
 
-  // <Icon
-  //   title="Guardar"
-  //   size={30}
-  //   onPress={() => navigation.state.params.savePress()}
-  //   backgroundColor="rgba(0,0,0,0)"
-  //   color="rgba(0,122,255,1)"
-  //   type='entypo'
-  //   name='save'
-  // />
-
   state = {
     isShareModalVisible: false,
+    isCatModalVisible: false,
     pos: 0
   }
 
@@ -84,8 +87,10 @@ class RecScreen extends Component {
 
   componentDidMount() {
     this.props.navigation.setParams({
+     category: this.props.nota.category.key,
      title: this.props.nota.title,
      sharePress: this.sharePress.bind(this),
+     categoriesPress: this.categoriesPress.bind(this),
      deletePress: this.deletePress.bind(this),
      savePress: this.savePress.bind(this),
      notaChanged: this.props.notaChanged
@@ -108,34 +113,47 @@ class RecScreen extends Component {
     this.props.recordEnd();
   }
 
+  onPressCategory(category) {
+    this.props.notaChanged({ prop: 'category', value: category });
+    this.props.navigation.setParams({ category: category.key });
+    this.setState({ isCatModalVisible: false });
+  }
+
+
   savePress = () => {
-    const { navigation, nota } = this.props;
-    const { title, text, uid } = nota;
+    const { nota } = this.props;
+    const { title, text } = nota;
     const str = text.map(item => item.val);
     if (title || str.join('')) {
-      this.props.saveNota({ title, text, navigation, uid });
+      this.props.saveNota(nota);
     } else {
-      this.props.deleteNota({ nota });
+      this.props.deleteNota(nota);
     }
   }
 
   deletePress = () => {
     const { nota, navigation } = this.props;
-    this.props.deleteNota({ nota });
+    this.props.deleteNota(nota);
     navigation.goBack();
   };
+
+  categoriesPress = () => {
+    this.setState({ isCatModalVisible: true });
+  };
+
 
   sharePress = () => {
     this.setState({ isShareModalVisible: true });
   };
 
-  inviteNota({ email }) {
-    const { uid } = this.props.nota;
-    this.props.inviteNota({ email, uid });
+  inviteNota(email) {
+    const { uid, members } = this.props.nota;
+    this.props.inviteNota({ email, uid, members });
+    this.setState({ isShareModalVisible: false });
   }
 
   handleBackdropPress() {
-    this.setState({ isShareModalVisible: false });
+    this.setState({ isShareModalVisible: false, isCatModalVisible: false });
   }
 
 
@@ -175,16 +193,10 @@ class RecScreen extends Component {
     );
   }
 
-  renderSelector() {
-    return (<ModalSelector
-                    data={data}
-                    initValue="Select something yummy!"
-                    onChange={(option)=>{ alert(`${option.label} (${option.key}) nom nom nom`) }} />);
-  }
-
   render() {
     return (
       <View style={{ flex: 1 }} >
+          <FormValidationMessage>{this.props.error}</FormValidationMessage>
           <ItemsList
             items={this.props.nota.text}
             onFocus={this.props.recording ? this.state.pos : false}
@@ -193,10 +205,17 @@ class RecScreen extends Component {
           />
           <FormValidationMessage>{this.props.error}</FormValidationMessage>
         {this.renderMic()}
-        <ModalOptions
+        <ModalShare
           onBackdropPress={this.handleBackdropPress.bind(this)}
           isVisible={this.state.isShareModalVisible}
           sendInvite={this.inviteNota.bind(this)}
+          members={this.props.nota.members}
+        />
+        <ModalCategories
+          onBackdropPress={this.handleBackdropPress.bind(this)}
+          isVisible={this.state.isCatModalVisible}
+          onPressCategory={this.onPressCategory.bind(this)}
+          categories={NOTA_CATEGORY}
         />
       </View>
     );

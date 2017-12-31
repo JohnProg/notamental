@@ -7,7 +7,8 @@ import {
   DELETE_NOTA,
   EDIT_NOTA,
   RESET_NOTA,
-  NOTA_INIT
+  NOTA_INIT,
+  INVITE_NOTA
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -21,7 +22,8 @@ const INITIAL_STATE = {
     timestamp: '',
     members: '',
     position: 0,
-    focused: false
+    focused: false,
+    category: { key: 'archive', label: 'Varios' }
   },
   error: '',
   recording: false
@@ -31,7 +33,11 @@ export default (state = INITIAL_STATE, action) => {
   console.log(action);
   switch (action.type) {
     case NOTA_CHANGED: {
-      return { ...state, nota: { ...state.nota, [action.payload.prop]: action.payload.value } };
+      return {
+        ...state,
+        error: '',
+        nota: { ...state.nota, [action.payload.prop]: action.payload.value }
+      };
     }
     case RESET_NOTA:
       return {
@@ -44,7 +50,8 @@ export default (state = INITIAL_STATE, action) => {
           uid: '',
           timestamp: '',
           members: '',
-          focused: false
+          focused: false,
+          category: { key: 'archive', label: 'Varios' }
         },
         error: '',
         recording: false
@@ -52,16 +59,16 @@ export default (state = INITIAL_STATE, action) => {
     case CREATE_NOTA:
       return INITIAL_STATE;
     case SAVE_NOTA:
-      return INITIAL_STATE;
+      return { ...INITIAL_STATE, error: action.payload };
     case DELETE_NOTA:
       return INITIAL_STATE;
-    // case DELETE_NOTA:
-    //   return INITIAL_STATE;
+    case INVITE_NOTA:
+      return { ...state, error: action.payload };
     case EDIT_NOTA: {
       return { ...state, nota: action.payload };
     }
     case NOTA_INIT:
-      return { ...state, nota: { ...state.nota, uid: action.payload } };
+      return { ...state, nota: action.payload };
     case VOICE_START:
       return { ...state, recording: true };
     case VOICE_END:

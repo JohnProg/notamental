@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { List, ListItem, Avatar } from 'react-native-elements';
+import { List, ListItem } from 'react-native-elements';
 import ActionButton from 'react-native-action-button';
 import firebase from 'react-native-firebase';
 import SplashScreen from 'react-native-splash-screen';
@@ -56,7 +56,7 @@ class ListScreen extends Component {
       this.props.navigation.navigate('MainNavigator', {}, {
           type: 'Navigation/NAVIGATE',
           routeName: 'rec',
-          params: { type: 'list', title: nota.title }
+          params: { type: 'list', title: nota.title, category: nota.category.key }
       });
     } else {
       this.props.resetNota();
@@ -89,15 +89,9 @@ class ListScreen extends Component {
     this.setState({ isModalVisible: false });
   }
 
-  // evaluateString(nota) {
-  //   if (nota.text[0]) {
-  //     return nota.text.join();
-  //   } return nota.text;
-  // }
-
   renderSubtitle(nota) {
     if (nota.text) {
-      if (nota.text.constructor === Array) return nota.text.map(item => item.val).join();
+      if (nota.text.constructor === Array) return nota.text.map(item => item.val).join('');
       return nota.text.val;
     } return null;
   }
@@ -113,15 +107,7 @@ class ListScreen extends Component {
     const date = new Date(nota.timestamp);
     return (
       <ListItem
-        roundAvatar
-        avatar={
-          <Avatar
-            rounded
-            icon={{ name: 'shopping-cart', color: 'white' }}
-            overlayContainerStyle={{ backgroundColor: 'green' }}
-          />
-        }
-        avatarStyle={{ flex: 1 }}
+        leftIcon={{ name: nota.category.key, type: 'entypo', color: 'black' }}
         key={nota.uid}
         title={nota.title}
         subtitle={this.renderSubtitle(nota)}

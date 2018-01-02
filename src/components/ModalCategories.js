@@ -4,45 +4,6 @@ import Modal from 'react-native-modal';
 import { Card, ListItem, Avatar } from 'react-native-elements';
 
 class ModalCategories extends Component {
-  // state = {
-  //   emailInvite: ''
-  // }
-  //
-  // handleInvite() {
-  //   this.props.sendInvite({ email: this.state.emailInvite });
-  // }
-  //
-  // renderButton({ prop, action }) {
-  //   return (
-  //     <Button
-  //       raised
-  //       icon={{ name: 'trash', type: 'entypo' }}
-  //       onPress={action.bind(this)}
-  //       title={prop}
-  //     />
-  //   );
-  // }
-  //
-  // renderInvitation() {
-  //   return (
-  //     <View>
-  //       <FormInput
-  //         placeholder='email@colega.com'
-  //         inputStyle={{ fontSize: 18 }}
-  //         textAlignVertical={'top'}
-  //         value={this.state.emailInvite}
-  //         onChangeText={value => this.setState({ emailInvite: value })}
-  //       />
-  //       <Button
-  //         raised
-  //         icon={{ name: 'trash', type: 'entypo' }}
-  //         onPress={this.handleInvite.bind(this)}
-  //         title={'Enviar invitacion'}
-  //       />
-  //     </View>
-  //   );
-  // }
-
   renderRow = (rowData) => {
     const category = rowData.item;
     return (

@@ -54,6 +54,7 @@ export const saveNota = ({ title, text, uid, members, category }) => {
 
 export const deleteNota = ({ uid, members }) => {
   const { currentUser } = firebase.auth();
+  console.log('del: ', uid, members);
   return (dispatch) => {
     handleDelete(uid, dispatch);
     firebase.database().ref(`/notas/${uid}`).off();
@@ -61,9 +62,11 @@ export const deleteNota = ({ uid, members }) => {
     .then(() => {
       _.unset(members, currentUser.uid);
       if (_.isEmpty(members)) {
+        console.log('borronota');
          firebase.database().ref(`/notas/${uid}`).remove()
            .catch((er) => console.log(er));
        } else {
+         console.log('actualizo miembro');
          firebase.database().ref(`/notas/${uid}/members/${currentUser.uid}`).remove()
          .catch((err) => console.log(err));
        }

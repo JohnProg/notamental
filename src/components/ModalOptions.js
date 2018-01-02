@@ -16,33 +16,13 @@ class ModalOptions extends Component {
     return (
       <Button
         raised
+        backgroundColor={'black'}
         icon={{ name: 'trash', type: 'entypo' }}
         onPress={action.bind(this)}
         title={prop}
       />
     );
   }
-
-  renderInvitation() {
-    return (
-      <View>
-        <FormInput
-          placeholder='email@colega.com'
-          inputStyle={{ fontSize: 18 }}
-          textAlignVertical={'top'}
-          value={this.state.emailInvite}
-          onChangeText={value => this.setState({ emailInvite: value })}
-        />
-        <Button
-          raised
-          icon={{ name: 'trash', type: 'entypo' }}
-          onPress={this.handleInvite.bind(this)}
-          title={'Enviar invitacion'}
-        />
-      </View>
-    );
-  }
-
   render() {
     return (
       <Modal
@@ -52,20 +32,23 @@ class ModalOptions extends Component {
         animationOut={'zoomOutUp'}
       >
         <Card containerStyle={styles.modalContent}>
-          <Text>
-            Testing
-          </Text>
-          {this.props.deleteNota ? (this.renderButton({
-            prop: 'BORRAR',
-            iconType: { name: 'trash', type: 'entypo' },
-            action: this.props.deleteNota
-          })) : null}
-          {this.props.inviteNota ? (this.renderButton({
-            prop: 'INVITAR',
-            iconType: { name: 'trash', type: 'entypo' },
-            action: this.props.inviteNota
-          })) : null}
-          {this.props.sendInvite ? this.renderInvitation() : null }
+          <Button
+            raised
+            borderRadius={4}
+            backgroundColor={'black'}
+            containerViewStyle={{ marginBottom: 10 }}
+            icon={{ type: 'entypo', name: 'trash' }}
+            title='Borrar Nota'
+            onPress={() => this.props.deleteNota()}
+          />
+          <Button
+            raised
+            borderRadius={4}
+            backgroundColor={'black'}
+            icon={{ type: 'entypo', name: 'share' }}
+            title='Compartir Nota'
+            onPress={() => this.props.inviteNota()}
+          />
         </Card>
       </Modal>
     );
@@ -88,12 +71,7 @@ const styles = {
     borderColor: 'rgba(0, 0, 0, 0.1)',
   },
   modalContent: {
-    // backgroundColor: 'white',
-    // padding: 22,
-    // justifyContent: 'center',
-    // alignItems: 'center',
     borderRadius: 4,
-    // borderColor: 'rgba(0, 0, 0, 0.1)',
   },
   bottomModal: {
     justifyContent: 'flex-end',

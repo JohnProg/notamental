@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 import Slides from '../components/Slides';
+import { SLIDE_DATA } from '../utils/slidedata';
 
-const SLIDE_DATA = [
-  { text: 'Bienvenida/o a\nNota Mental', color: '#e4e574' },
-  { text: 'Puedes guardar aquí tus notas de voz', color: '#009688' },
-  { text: 'Y ese audio se convertirá en texto!', color: '#03A9F4' }
-];
 
 class WelcomeScreen extends Component {
   // static navigationOptions = {
@@ -20,6 +16,7 @@ class WelcomeScreen extends Component {
   }
 
   render() {
+    console.log(SLIDE_DATA);
     return (
       <Slides
         data={SLIDE_DATA}

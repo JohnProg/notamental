@@ -20,7 +20,7 @@ class ListScreen extends Component {
         size={30}
         onPress={() => navigation.navigate('settings')}
         backgroundColor="rgba(0,0,0,0)"
-        color="rgba(0,122,255,1)"
+        color="black"
         name='account-settings-variant'
       />,
     headerStyle: {
@@ -77,7 +77,7 @@ class ListScreen extends Component {
   hideModal = () => this.setState({ isModalVisible: false })
 
   handleDelete = () => {
-    this.props.deleteNota({ nota: this.state.selectedNota });
+    this.props.deleteNota(this.state.selectedNota);
     this.hideModal();
   };
 
@@ -108,6 +108,7 @@ class ListScreen extends Component {
     return (
       <ListItem
         leftIcon={{ name: nota.category.key, type: 'entypo', color: 'black' }}
+        leftIconOnPress={() => this.showModal(nota)}
         key={nota.uid}
         title={nota.title}
         subtitle={this.renderSubtitle(nota)}

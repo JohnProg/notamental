@@ -27,7 +27,7 @@ class RecScreen extends Component {
     tabBarVisible: false,
     headerTitle: (
       <TextInput
-        style={{ width: 190, height: 50, fontSize: 20, fontWeight: 'bold' }}
+        style={{ width: 220, height: 50, fontSize: 18, fontWeight: 'bold' }}
         placeholder='Titulo Nota'
         value={navigation.state.params.title ? navigation.state.params.title : null}
         onChangeText={value => {
@@ -40,27 +40,27 @@ class RecScreen extends Component {
       <View style={{ flexDirection: 'row' }}>
         <Icon
           title="Categorias"
-          size={30}
+          size={27}
           onPress={() => navigation.state.params.categoriesPress()}
           backgroundColor="rgba(0,0,0,0)"
           color="#000000"
           type='entypo'
           name={navigation.state.params.category ? navigation.state.params.category : 'archive'}
-          containerStyle={{ marginRight: 10 }}
+          containerStyle={{ marginRight: 7 }}
         />
         <Icon
           title="Compartir"
-          size={30}
+          size={27}
           onPress={() => navigation.state.params.sharePress()}
           backgroundColor="rgba(0,0,0,0)"
           color="#000000"
           type='entypo'
           name='share'
-          containerStyle={{ marginRight: 10 }}
+          containerStyle={{ marginRight: 7 }}
         />
         <Icon
           title="Borrar"
-          size={30}
+          size={27}
           onPress={() => navigation.state.params.deletePress()}
           backgroundColor="rgba(0,0,0,0)"
           color="#000000"

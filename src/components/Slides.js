@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, Dimensions } from 'react-native';
+import { View, Text, Image, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 import Swiper from 'react-native-swiper';
 
@@ -36,6 +36,17 @@ class Slides extends Component {
     }
   }
 
+  renderLogoImage(img) {
+    if (img) {
+      return (
+        <Image
+          style={{ alignSelf: 'center', marginTop: 15 }}
+          source={img}
+        />
+      );
+    }
+  }
+
   renderSlides() {
     return this.props.data.map((slide, index) => {
       return (
@@ -43,7 +54,8 @@ class Slides extends Component {
           key={slide.text}
           style={[styles.slideStyle, { backgroundColor: slide.color }]}
         >
-          <Text style={styles.textStyle}>{slide.text}</Text>
+          <Text style={{ ...styles.textStyle, color: slide.textColor }}>{slide.text}</Text>
+          {this.renderLogoImage(slide.img)}
           {this.renderLastSlide(index)}
         </View>
       );
@@ -55,6 +67,7 @@ class Slides extends Component {
       return (
         <Swiper
           style={styles.wrapper}
+          activeDot={'black'}
           showsButtons
           removeClippedSubviews={false}
         >
@@ -93,12 +106,11 @@ const styles = {
   },
   textStyle: {
     fontSize: 30,
-    color: 'white',
     textAlign: 'center',
   },
   buttonStyle: {
     marginTop: 25,
-    backgroundColor: '#0288D1'
+    backgroundColor: 'black'
   }
 };
 

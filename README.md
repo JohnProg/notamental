@@ -7,7 +7,7 @@ Notamental is a note-taking mobile application running in Android, and IOS (stil
 - [React-native-voice](https://github.com/wenkesj/react-native-voice) (Speech to text): Users could write their notes using the Android Speech recognition in several languages
 - [Dialog-Flow AI](https://dialogflow.com/) (TODO): Using an Artificial Intelligence agent, notes will be categorized automatically and suggest recomendation to the user.
 
-(GIF of te APP Usage)
+![Gif Example](https://github.com/aamping/notamental/blob/master/notamental.gif)
 
 Still not posted in any market app store
 
